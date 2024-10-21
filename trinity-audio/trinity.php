@@ -8,7 +8,7 @@
    * Plugin Name:       Trinity Audio
    * Plugin URI:        https://wordpress.org/plugins/trinity-audio/
    * Description:       This plugin generates an audio version of the post, for absolutely FREE. You can choose the language and the gender of the voice reading your content. You also have the option to add Trinity Audio's player on select posts or have it audiofy all of your content. In both cases, it only takes a few simple clicks to get it done. The plugin is built through collaboration with the Amazon Polly team.
-   * Version:           5.9
+   * Version:           5.10
    * Author:            Trinity Audio
    * Author URI:        https://trinityaudio.ai/
    * License:           GPL-3.0 ONLY
@@ -41,9 +41,14 @@
     $is_single   = is_single();
     $in_the_loop = in_the_loop() ?: !!trinity_get_check_for_loop();
 
+    $main_post_id = get_queried_object_id();
+    $renders_post_id = get_the_ID();
+    $is_renders_main_post_id = $main_post_id === $renders_post_id;
+
     $is_main_query = is_main_query();
-    if (!($is_single && $in_the_loop && $is_main_query)) {
-      wp_add_inline_script("the_content-hook-script", "console.debug('TRINITY_WP', 'Skip player from rendering', 'is single: $is_single, is main loop: $in_the_loop, is main query: $is_main_query', 'TS: $date');");
+
+    if (!($is_single && $in_the_loop && $is_main_query && $is_renders_main_post_id)) {
+      wp_add_inline_script("the_content-hook-script", "console.debug('TRINITY_WP', 'Skip player from rendering', 'is single: $is_single, is main loop: $in_the_loop, is main query: $is_main_query, is renders main post id: $is_renders_main_post_id. Main post ID: $main_post_id, renders post id: $renders_post_id', 'TS: $date');");
 
       if (strpos($content, TRINITY_AUDIO_STARTUP) !== false) {
         wp_add_inline_script("the_content-hook-script", "console.debug('TRINITY_WP', 'Post content contains trinity tag');");
