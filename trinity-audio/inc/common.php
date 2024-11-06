@@ -253,6 +253,7 @@
     $response = "<script nitro-exclude data-wpfc-render='false' data-cfasync='false' data-no-optimize='1' data-no-defer='1' data-no-minify='1' data-trinity-mount-date='$date' id='trinity_tts_wp_config'>var TRINITY_TTS_WP_CONFIG = " . json_encode($trinity_tts_wp_config) . ';</script>';
 
     $player_query_params = [
+      'integrationType' => 'wordpress',
       'postHashV2'  => $post_hash,
       'language'    => $source_language,
       'voiceGender' => $gender,

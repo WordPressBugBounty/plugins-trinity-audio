@@ -152,6 +152,10 @@ Generated audio posts will be available for consumption regardless of package st
 7. Trusted by leading media publications and content creators.
 
 == Changelog ==
+= 5.11 =
+ *Release Date - Wed 6, 2024*
+ * Added integration type
+
 = 5.10 =
  *Release Date - Oct 21, 2024*
  * Avoid render plugin on preview posts list
