@@ -1,7 +1,34 @@
 <?php
-  if (!class_exists( 'simple_html_dom')) {
+  if (!class_exists('simple_html_dom')) {
     require_once __DIR__ . '/lib/simple_html_dom.php';
   }
+
+  /*
+   * Important things to note:
+   *
+   * Having text inside DB as
+   * ```text
+   * <strong>test1
+   *  test2
+   *
+   *  test3
+   *
+   *
+   *  test4</strong>
+   * ```
+   * will turn into
+   *
+   * ```html
+   * <p><strong>test1<br />
+   *  test2</p>
+   * <p> test3</p>
+   * <p> test4</strong></p>
+   * ```
+   *
+   * inside Gutenberg editor (HTML edit), but content we get programmatically will still remain the same as in DB.
+   * That shows, that new lines inside DB, WP considers as paragraphs anyway.
+   * So we have to deal with new lines (that might be in DB) instead of HTML tags we see in editor.
+   */
 
   function trinity_get_clean_text($title, $content, $whitelist_shortcodes) {
     if ($title && !$content) $content = $title; // in case of passing only title for new text approach, we don't want a dot at the end
@@ -17,18 +44,18 @@
       }
     );
 
-      $regex   = get_shortcode_regex($result_shortcodes_tags);
-      $content = preg_replace("/$regex/", '', $content);
+    $regex = get_shortcode_regex($result_shortcodes_tags);
+    $content = preg_replace("/$regex/", '', $content);
 
-      $content = do_shortcode($content);
+    $content = do_shortcode($content);
 
-      $content = html_entity_decode($content);
+    $content = html_entity_decode($content);
+
+    // replace all new lines with pause. Do it at that point, since trinity_remove_tags will not preserve new lines
+    $content = preg_replace('/[\n|\r]+/', BREAK_MACRO, $content);
 
     // remove tags that was specified by user
     $content = trinity_remove_tags($content);
-
-    // replace all new lines with pause
-    $content = preg_replace('/[\n|\r]+/', BREAK_MACRO, $content);
 
     // get text from HTML
     $content = trinity_get_text_from_html($content);
@@ -55,7 +82,10 @@
 
   function trinity_remove_tags($text) {
     $trinity_tags_to_skip_from_reading = trinity_get_skip_tags();
+
     if (empty($trinity_tags_to_skip_from_reading)) return $text;
+    // Handle bug we had, when empty string was saved as Array with one empty element
+    if (empty($trinity_tags_to_skip_from_reading[0])) return $text;
 
     $html = str_get_html($text);
     if (!$html) return $text; // returns false in case no content was found

@@ -4,7 +4,7 @@ Contributors : TrinityAudio
 Tags: Text to Speech, Audio Player, player, Content to audio, TTS, Text to Audio, Text to voice, Voiceover, Accessibility, Audio, Turn text into audio, audio narrator
 Requires at least: 5.2
 Requires PHP: 7.2
-Tested up to: 6.6
+Tested up to: 6.7
 Stable tag: trunk
 License: GPLv3 ONLY
 License URI : https://www.gnu.org/licenses/gpl-3.0.html
@@ -103,9 +103,9 @@ If at any stage you have questions or need support, reach out to us at: [wp@trin
 = What is Trinity Audio? =
     Trinity Audio, the only unified audio platform, is an AI company helping publishers and content creators build their audio future and provide audio experiences for their audiences. The company's technology instantly converts content from text to audio with the most natural sounding voices, continuously learns listeners' behavior, and creates smart audio experiences, covering every stage of the audio journey from creation to distribution.
 = Which languages are supported? =
-     Trinity Audio is supporting the following languages: 
+     Trinity Audio is supporting the following languages:
 Afrikaans, Albanian, Amharic, Arabic (multiple accents), Azerbaijani, Bengali (multiple accents), Bosnian, Bulgarian, Burmese, Catalan, Chinese (multiple accents), Croatian, Czech, Danish, Dutch (multiple accents), English (multiple accents), Estonian, Filipino, Finnish, French (multiple accents), Galician, Georgian, German (multiple accents), Greek, Gujarati, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Irish, Italian, Japanese, Javanese, Kannada, Kazakh, Khmer, Korean, Lao, Latvian, Lithuanian, Macedonian, Malay, Malayalam, Maltese, Mandarin Chinese (multiple accents), Marathi, Mongolian, Nepali, Norwegian Bokmål, Panjabi, Pashto, Persian, Polish, Portuguese (multiple accents), Romanian, Russian, Serbian, Sinhala, Slovak, Slovene, Somali, Spanish (multiple accents), Standard Arabic, Sundanese, Swahili (multiple accents), Swedish, Tamil (multiple accents), Telugu, Thai, Turkish, Ukrainian, Urdu (multiple accents), Uzbek, Vietnamese, Welsh, Yue Chinese and Zulu.
- 
+
 * We are constantly working on adding more languages. In case the required language is not in the list, reach out to support to check when it is expected.
 ** Some of the languages are only available in the paid plans.
 = How much does Trinity Audio cost? =
@@ -152,6 +152,10 @@ Generated audio posts will be available for consumption regardless of package st
 7. Trusted by leading media publications and content creators.
 
 == Changelog ==
+= 5.12 =
+ *Release Date - Jan 9, 2025*
+ * Added pauses for text with new lines
+
 = 5.11 =
  *Release Date - Wed 6, 2024*
  * Added integration type

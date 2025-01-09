@@ -215,10 +215,7 @@
       TRINITY_AUDIO,
       TRINITY_AUDIO_SKIP_TAGS,
       [
-        'sanitize_callback' => function($value) {
-          // save into DB as array.
-          return array_map('trim', explode(',', $value));
-        },
+        'sanitize_callback' => 'trinity_admin_save_as_array'
       ]
     );
 
@@ -226,15 +223,20 @@
       TRINITY_AUDIO,
       TRINITY_AUDIO_ALLOW_SHORTCODES,
       [
-        'sanitize_callback' => function($value) {
-          // save into DB as array.
-          return array_map('trim', explode(',', $value));
-        },
+        'sanitize_callback' => 'trinity_admin_save_as_array'
       ]
     );
 
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_CHECK_FOR_LOOP);
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_ACTIVATE_ON_API_POST_CREATION);
+  }
+
+  function trinity_admin_save_as_array($value) {
+    // return an empty array if the input is empty
+    if (empty(trim($value))) return [];
+
+    // save into DB as array
+    return array_map('trim', explode(',', $value));
   }
 
   function trinity_admin_create_menu() {
