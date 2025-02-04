@@ -152,6 +152,10 @@ Generated audio posts will be available for consumption regardless of package st
 7. Trusted by leading media publications and content creators.
 
 == Changelog ==
+= 5.13 =
+ *Release Date - Feb 4, 2025*
+ * Trim entered values
+
 = 5.12 =
  *Release Date - Jan 9, 2025*
  * Added pauses for text with new lines

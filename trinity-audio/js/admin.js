@@ -438,7 +438,7 @@ function trinityAudioOnPublisherTokenSubmit(e) {
     dataType: 'json',
     data: {
       action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN_URL,
-      publisher_token: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN).val(),
+      publisher_token: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN).val().trim(),
     },
     success: (response) => {
       if (response.code === TRINITY_REGISTRATION_RESPONSE_CODE.SUCCESS || response.code === TRINITY_REGISTRATION_RESPONSE_CODE.ALREADY_ASSIGNED_PUBLISHER_TOKEN) {
