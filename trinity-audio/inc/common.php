@@ -99,10 +99,6 @@
     return get_option(TRINITY_AUDIO_SOURCE_LANGUAGE);
   }
 
-  function trinity_get_gender() {
-    return get_option(TRINITY_AUDIO_GENDER_ID);
-  }
-
   function trinity_get_new_posts_default() {
     return get_option(TRINITY_AUDIO_SOURCE_NEW_POSTS_DEFAULT);
   }
@@ -127,10 +123,6 @@
     return get_option(TRINITY_AUDIO_ALLOW_SHORTCODES, []);
   }
 
-  function trinity_get_voice_id() {
-    return get_option(TRINITY_AUDIO_VOICE_ID);
-  }
-
   function trinity_get_is_first_changes_saved() {
     return get_option(TRINITY_AUDIO_FIRST_CHANGES_SAVE);
   }
@@ -151,10 +143,6 @@
     return get_option(TRINITY_AUDIO_IS_ACCOUNT_KEY_LINKED);
   }
 
-  function trinity_is_migration_v5_failed() {
-    return get_option(TRINITY_AUDIO_CONFIGURATION_V5_FAILED);
-  }
-
   function trinity_get_first_time_install() {
     return get_transient(TRINITY_AUDIO_FIRST_TIME_INSTALL);
   }
@@ -168,44 +156,11 @@
     return $plugin_data['Version'];
   }
 
-  function trinity_get_voices($languages_url = TRINITY_AUDIO_STANDARD_VOICES_URL) {
-    $result = trinity_curl_get($languages_url, trinity_can_not_connect_error_message('Can\'t get list of supported languages.'), false);
-
-    if (!$result) return false;
-
-    $languages = [];
-
-    foreach (json_decode($result) as $lang) {
-      $voiceIds = [];
-      foreach ($lang->voices as $gender => $voice) {
-        if (isset($voice->voiceId)) $voiceIds[$gender] = $voice->voiceId;
-        else if (isset($voice->providerVoiceId)) $voiceIds[$gender] = $voice->providerVoiceId;
-      }
-
-      $languageObj = (object)[
-        'name'    => $lang->languageName,
-        'code'    => $lang->code,
-        'genders' => array_keys((array)$lang->voices),
-        'voices'  => $voiceIds
-      ];
-
-      if ($lang->country) $languageObj->name .= " ($lang->country)";
-
-      array_push($languages, $languageObj);
-    }
-
-    $languages = array_values($languages);
-
-    return $languages;
-  }
-
   function trinity_include_audio_player($page_content) {
     $date    = trinity_get_date();
     $post_id = $GLOBALS['post']->ID;
 
     $post_hash = trinity_ph_get_audio_posthash($post_id);
-
-    $gender      = get_post_meta($post_id, TRINITY_AUDIO_GENDER_ID, true);
 
     $whitelist_shortcodes = trinity_get_allowed_shortcodes();
     $title                = trinity_get_clean_text(get_the_title($post_id), '', $whitelist_shortcodes);
@@ -223,17 +178,6 @@
     $viewkey = trinity_get_view_key();
 
     $source_language = get_post_meta($post_id, TRINITY_AUDIO_SOURCE_LANGUAGE, true);
-
-    /*
-    * Unfortunately AWS Polly and AWS Translate support different namings.
-    *
-    * @link https://docs.aws.amazon.com/polly/latest/dg/voicelist.html
-    * @link https://docs.aws.amazon.com/translate/latest/dg/what-is.html
-    */
-    $language_code_map = [
-      'arb'    => 'ar', // cmn-CN code is zh language (Arabic)
-      'cmn-CN' => 'zh', // cmn-CN code is zh language (Chinese)
-    ];
 
     if (isset($language_code_map[$source_language])) {
       $source_language = $language_code_map[$source_language];
@@ -256,21 +200,11 @@
       'integrationType' => 'wordpress',
       'postHashV2'  => $post_hash,
       'language'    => $source_language,
-      'voiceGender' => $gender,
       'pageURL'     => get_permalink()
     ];
 
     $post_voice_id = get_post_meta($post_id, TRINITY_AUDIO_VOICE_ID, true);
     if ($post_voice_id) $player_query_params['voiceId'] = $post_voice_id;
-
-    if (trinity_is_migration_v5_failed()) {
-      unset($player_query_params['postConfig']);
-
-      $poweredby = trinity_get_powered_by();
-      $poweredby = $poweredby ? $poweredby : 0;
-
-      $player_query_params['poweredby'] = $poweredby;
-    }
 
     // do NOT include trinityAudioPlaceholder with PB when we already have in source code, because of using shortcodes, themes, etc... otherwise it will be flashing in wrong position
     if (!strstr($page_content, 'trinityAudioPlaceholder')) {
@@ -475,8 +409,7 @@
   function trinity_send_stat_update_settings() {
     $data = [
       'installkey' => trinity_get_install_key(), // need for auth
-      'powered_by' => trinity_get_powered_by(),
-      'voice_id'   => trinity_get_voice_id()
+      'powered_by' => trinity_get_powered_by()
     ];
 
     trinity_curl_post(
@@ -495,12 +428,10 @@
       'speed'        => $_GET['speed'],
       'language'     => $_GET['language'],
       'voiceStyle'   => $_GET['voiceStyle'],
-      'engine'       => $_GET['engine'],
       'themeId'      => $_GET['themeId'],
       'voice'        => $_GET['voice'],
       'fab'          => $_GET['fab'],
       'powered_by'   => $_GET['poweredBy'],
-      'gender'       => $_GET['gender'],
       'showSettings' => $_GET['showSettings'],
       'shareEnabled' => $_GET['shareEnabled']
     ];
@@ -510,24 +441,6 @@
         'post_data'     => $data,
         'url'           => TRINITY_AUDIO_UPDATE_FULL_UNIT_CONFIG_URL,
         'error_message' => trinity_can_not_connect_error_message('Can\'t update plugin details.'),
-        'die'           => false
-      ]
-    );
-  }
-
-  function trinity_send_stat_migrate_v5_settings() {
-    $data = [
-      'installkey'      => trinity_get_install_key(), // need for auth
-      'source_language' => trinity_get_source_language(),
-      'powered_by'      => trinity_get_powered_by(),
-      'gender'          => trinity_get_gender()
-    ];
-
-    return trinity_curl_post(
-      [
-        'post_data'     => $data,
-        'url'           => TRINITY_AUDIO_UPDATE_PLUGIN_MIGRATION_URL,
-        'error_message' => trinity_can_not_connect_error_message('Can\'t migrate plugin details.'),
         'die'           => false
       ]
     );
@@ -727,24 +640,3 @@
     if (trinity_get_is_account_key_linked()) return TRINITY_AUDIO_UPGRADE_URL;
     return TRINITY_AUDIO_PRICING_URL;
   }
-
-  function trinity_get_languages($is_premium = false, $is_package_known = false) {
-    $cached_languages = get_transient(TRINITY_AUDIO_LANGUAGES_CACHE);
-    $languages        = json_decode($cached_languages);
-
-    if ($languages) return $languages;
-
-    if ($is_package_known === false) {
-      $package_data = trinity_get_package_data();
-      $is_premium   = $package_data->package->isPremium;
-    }
-
-    $languages_url = $is_premium ? TRINITY_AUDIO_EXTENDED_VOICES_URL : TRINITY_AUDIO_STANDARD_VOICES_URL;
-
-    $languages = trinity_get_voices($languages_url);
-
-    set_transient(TRINITY_AUDIO_LANGUAGES_CACHE, json_encode($languages), 10800); // 3h
-
-    return $languages;
-  }
-

@@ -137,22 +137,6 @@
                         <?php echo trinity_init_checks_speed_curl(TRINITY_AUDIO_TEST_SERVICE); ?> ms
                       </td>
                     </tr>
-                    <tr>
-                      <td>
-                        Speed and ability to connect to <strong>endpoint #2</strong> using wp_remote_get
-                      </td>
-                      <td colspan="2">
-                        <?php echo trinity_init_checks_speed_wp(TRINITY_AUDIO_STANDARD_VOICES_URL); ?> ms
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Speed and ability to connect to <strong>endpoint #2</strong> using curl
-                      </td>
-                      <td colspan="2">
-                        <?php echo trinity_init_checks_speed_curl(TRINITY_AUDIO_STANDARD_VOICES_URL); ?> ms
-                      </td>
-                    </tr>
                     </tbody>
                   </table>
                 </td>

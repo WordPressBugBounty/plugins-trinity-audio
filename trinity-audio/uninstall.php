@@ -19,7 +19,6 @@
 
     delete_option(TRINITY_AUDIO_PLUGIN_VERSION);
     delete_option(TRINITY_AUDIO_PLUGIN_MIGRATION);
-    delete_option(TRINITY_AUDIO_GENDER_ID);
     delete_option(TRINITY_AUDIO_SOURCE_LANGUAGE);
     delete_option(TRINITY_AUDIO_SOURCE_NEW_POSTS_DEFAULT);
     delete_option(TRINITY_AUDIO_PLAYER_LABEL);
@@ -31,7 +30,6 @@
     delete_option(TRINITY_AUDIO_PHBU_UPDATED_POSTS_NUM);
     delete_option(TRINITY_AUDIO_PHBU_FAILED_POSTS);
     delete_option(TRINITY_AUDIO_PHBU_BULK_UPDATE_DONE);
-    delete_option(TRINITY_AUDIO_TRANSLATE);
     delete_option(TRINITY_AUDIO_FIRST_CHANGES_SAVE);
     delete_option(TRINITY_AUDIO_VOICE_ID);
     delete_option(TRINITY_AUDIO_MIGRATION_PROGRESS);

@@ -1,10 +1,10 @@
 === Trinity Audio - Text to Speech AI audio player to convert content into audio ===
 
 Contributors : TrinityAudio
-Tags: Text to Speech, Audio Player, player, Content to audio, TTS, Text to Audio, Text to voice, Voiceover, Accessibility, Audio, Turn text into audio, audio narrator
+Tags: Text to Audio, Text to Speech, Audio Player, TTS Player, Content to audio, Text to voice, Voiceover, Accessibility, Audio, Turn text into audio, audio narrator
 Requires at least: 5.2
 Requires PHP: 7.2
-Tested up to: 6.7
+Tested up to: 6.8
 Stable tag: trunk
 License: GPLv3 ONLY
 License URI : https://www.gnu.org/licenses/gpl-3.0.html
@@ -86,8 +86,8 @@ Here are the recommended steps for configuring the plugin:
 
 1. Choose the default source language.
 2. Filter the gender you prefer.
-3. Open the premium voice tab.
-4. If locked, choose standard voices.
+3. If your plan includes GenAI voices, choose the GenAI voice tab.
+4. If your plan doesn't include GenAI voices, choose the Premium voices tab.
 5. Listen to the different narrators and choose the one you find as best.
 6. Choose a voice style you like and click on the player to listen to the sample.
 7. Make sure the checkbox next to "Help us reach new users" is checked.
@@ -152,23 +152,27 @@ Generated audio posts will be available for consumption regardless of package st
 7. Trusted by leading media publications and content creators.
 
 == Changelog ==
-= 5.13 =
+= 5.20.0 =
+ *Release Date - Apr 29, 2025*
+ * Implemented a new voice selector component at the post level
+
+= 5.13.0 =
  *Release Date - Feb 4, 2025*
  * Trim entered values
 
-= 5.12 =
+= 5.12.0 =
  *Release Date - Jan 9, 2025*
  * Added pauses for text with new lines
 
-= 5.11 =
+= 5.11.0 =
  *Release Date - Wed 6, 2024*
  * Added integration type
 
-= 5.10 =
+= 5.10.0 =
  *Release Date - Oct 21, 2024*
  * Avoid render plugin on preview posts list
 
-= 5.9 =
+= 5.9.0 =
  *Release Date - May 27, 2024*
  * Change text output to support new format
 

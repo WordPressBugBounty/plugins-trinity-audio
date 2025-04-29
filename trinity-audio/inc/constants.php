@@ -27,8 +27,6 @@
   define('TRINITY_AUDIO_LOG', TRINITY_AUDIO_LOG_DIR . '/' . TRINITY_AUDIO_LOG_FILE_PART_NAME . '-' . get_log_prefix() . '.log');
   define('TRINITY_AUDIO_INFO_HTML', TRINITY_AUDIO_LOG_DIR . '/' . TRINITY_AUDIO_INFO_FILE_PART_NAME . '-' . get_log_prefix() . '.html');
 
-  const TRINITY_AUDIO_LABEL_DEFAULT = 'Default';
-
   const BREAK_MACRO = '⏸';
   const BLOCK_MACRO = '▇';
 
@@ -39,16 +37,10 @@
     const error = 'error';
   }
 
-  const TRINITY_AUDIO_GENDER_ARRAY = [
-    'm' => 'Male',
-    'f' => 'Female',
-  ];
-
   const TRINITY_AUDIO_INSTALLKEY                    = 'trinity_audio_installkey';
   const TRINITY_AUDIO_VIEWKEY                       = 'trinity_audio_viewkey';
   const TRINITY_AUDIO_PLUGIN_VERSION                = 'trinity_audio_plugin_version'; // array
   const TRINITY_AUDIO_PLUGIN_MIGRATION              = 'trinity_audio_plugin_migration'; // array
-  const TRINITY_AUDIO_GENDER_ID                     = 'trinity_audio_gender_id';
   const TRINITY_AUDIO_SOURCE_LANGUAGE               = 'trinity_audio_source_language';
   const TRINITY_AUDIO_VOICE_ID                      = 'trinity_audio_voice_id';
   const TRINITY_AUDIO_SOURCE_NEW_POSTS_DEFAULT      = 'trinity_audio_defconf';
@@ -66,34 +58,25 @@
   const TRINITY_AUDIO_RECOVER_INSTALLKEY            = 'trinity_audio_recover_installkey';
   const TRINITY_AUDIO_FIRST_CHANGES_SAVE            = 'trinity_audio_first_changes_save';
   const TRINITY_AUDIO_IS_ACCOUNT_KEY_LINKED         = 'trinity_audio_is_account_linked';
-  const TRINITY_AUDIO_TRANSLATE                     = 'trinity_audio_translate';
   const TRINITY_AUDIO_UPDATE_UNIT_CONFIG            = 'trinity_audio_update_unit_config';
   const TRINITY_AUDIO_SEND_METRIC                   = 'trinity_audio_send_metric';
   const TRINITY_AUDIO_REMOVE_POST_BANNER            = 'trinity_audio_remove_post_banner';
   const TRINITY_AUDIO_PACKAGE_INFO                  = 'trinity_audio_package_info';
   const TRINITY_AUDIO_ACTIVATE_ON_API_POST_CREATION = 'trinity_audio_activate_on_api_post_creation';
 
-  const TRINITY_AUDIO_LANGUAGES_CACHE = 'trinity_audio_languages_cache';
+  const TRINITY_AUDIO_WP_SERVICE                    = TRINITY_AUDIO_SERVICE . '/wordpress';
+  const TRINITY_AUDIO_BULK_UPDATE_URL               = TRINITY_AUDIO_WP_SERVICE . '/bulk_update';
+  const TRINITY_AUDIO_POST_HASH_URL_V2              = TRINITY_AUDIO_WP_SERVICE . '/v2/posthash';
+  const TRINITY_AUDIO_UPDATE_PLUGIN_CONFIG_URL      = TRINITY_AUDIO_WP_SERVICE . '/config';
+  const TRINITY_AUDIO_METRICS_URL                   = TRINITY_AUDIO_WP_SERVICE . '/metrics';
 
-  const TRINITY_AUDIO_CONFIGURATION_V5_FAILED = 'trinity_audio_configuration_v5_failed';
-
-  const TRINITY_AUDIO_WP_SERVICE               = TRINITY_AUDIO_SERVICE . '/wordpress';
-  const TRINITY_AUDIO_STANDARD_VOICES_URL      = TRINITY_AUDIO_SERVICE . '/standard-voices';
-  const TRINITY_AUDIO_EXTENDED_VOICES_URL      = TRINITY_AUDIO_SERVICE . '/extended-voices';
-  const TRINITY_AUDIO_BULK_UPDATE_URL          = TRINITY_AUDIO_WP_SERVICE . '/bulk_update';
-  const TRINITY_AUDIO_POST_HASH_URL_V2         = TRINITY_AUDIO_WP_SERVICE . '/v2/posthash';
-  const TRINITY_AUDIO_UPDATE_PLUGIN_CONFIG_URL = TRINITY_AUDIO_WP_SERVICE . '/config';
-  // TODO: remove after there is no publishers with v < 5.0.0
-  const TRINITY_AUDIO_UPDATE_PLUGIN_MIGRATION_URL = TRINITY_AUDIO_WP_SERVICE . '/config_migration';
-  const TRINITY_AUDIO_METRICS_URL                 = TRINITY_AUDIO_WP_SERVICE . '/metrics';
-
-  const TRINITY_AUDIO_CREDITS_URL                 = TRINITY_AUDIO_WP_SERVICE . '/credits';
-  const TRINITY_AUDIO_KEYS_URL                    = TRINITY_AUDIO_WP_SERVICE . '/signup';
-  const TRINITY_AUDIO_CONTACT_US_URL              = TRINITY_AUDIO_WP_SERVICE . '/contact-us';
-  const TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL   = TRINITY_AUDIO_WP_SERVICE . '/update_plugin_details';
-  const TRINITY_AUDIO_PUBLISHER_TOKEN_URL         = TRINITY_AUDIO_WP_SERVICE . '/assign-unit-to-publisher';
-  const TRINITY_AUDIO_UPDATE_FULL_UNIT_CONFIG_URL = TRINITY_AUDIO_WP_SERVICE . '/unit-config';
-  const TRINITY_AUDIO_NOTIFICATIONS_URL           = TRINITY_AUDIO_WP_SERVICE . '/notification';
+  const TRINITY_AUDIO_CREDITS_URL                   = TRINITY_AUDIO_WP_SERVICE . '/credits';
+  const TRINITY_AUDIO_KEYS_URL                      = TRINITY_AUDIO_WP_SERVICE . '/signup';
+  const TRINITY_AUDIO_CONTACT_US_URL                = TRINITY_AUDIO_WP_SERVICE . '/contact-us';
+  const TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL     = TRINITY_AUDIO_WP_SERVICE . '/update_plugin_details';
+  const TRINITY_AUDIO_PUBLISHER_TOKEN_URL           = TRINITY_AUDIO_WP_SERVICE . '/assign-unit-to-publisher';
+  const TRINITY_AUDIO_UPDATE_FULL_UNIT_CONFIG_URL   = TRINITY_AUDIO_WP_SERVICE . '/unit-config';
+  const TRINITY_AUDIO_NOTIFICATIONS_URL             = TRINITY_AUDIO_WP_SERVICE . '/notification';
 
   const TRINITY_AUDIO_ENABLED = 'trinity_audio_enable';
 
@@ -124,10 +107,7 @@
   const TRINITY_AUDIO_TITLE_CONTENT = 'title_content';
 
   const TRINITY_AUDIO_POST_META_MAP = [
-    'content'               => 'c',
-    'title_content'         => 'tc',
-    'excerpt_content'       => 'ec',
-    'title_excerpt_content' => 'tec'
+    'title_content'         => 'tc'
   ];
 
   const TRINITY_AUDIO_FEEDBACK_MESSAGE = 'trinity_audio_feedback_message';

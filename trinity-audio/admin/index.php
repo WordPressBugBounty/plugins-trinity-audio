@@ -54,7 +54,6 @@
         'TRINITY_AUDIO_REGISTER'             => TRINITY_AUDIO_REGISTER,
         'TRINITY_AUDIO_RECOVER_INSTALLKEY'   => TRINITY_AUDIO_RECOVER_INSTALLKEY,
         'TRINITY_AUDIO_FIRST_CHANGES_SAVE'   => TRINITY_AUDIO_FIRST_CHANGES_SAVE,
-        'LANGUAGES'                          => trinity_get_voices(),
         'TRINITY_AUDIO_BULK_UPDATE_PROGRESS' => $bulk_progress,
         TRINITY_AUDIO_SKIP_TAGS              => implode(',', trinity_get_skip_tags()),
         TRINITY_AUDIO_ALLOW_SHORTCODES       => implode(',', trinity_get_allowed_shortcodes()),
@@ -107,15 +106,12 @@
     add_option(TRINITY_AUDIO_SOURCE_LANGUAGE, 'en-US', '', true);
     add_option(TRINITY_AUDIO_POWERED_BY, 1, '', true);
     add_option(TRINITY_AUDIO_PRECONNECT, 1, '', true);
-    add_option(TRINITY_AUDIO_GENDER_ID, 'f', '', true);
-    add_option(TRINITY_AUDIO_VOICE_ID, 'Joanna', '', true);
     add_option(TRINITY_AUDIO_PLAYER_LABEL, '', '', true);
     add_option(TRINITY_AUDIO_SOURCE_NEW_POSTS_DEFAULT, 1, '', true);
     add_option(TRINITY_AUDIO_SKIP_TAGS, [], '', true);
     add_option(TRINITY_AUDIO_ALLOW_SHORTCODES, [], '', true);
     add_option(TRINITY_AUDIO_CHECK_FOR_LOOP, 0, '', true);
     add_option(TRINITY_AUDIO_ACTIVATE_ON_API_POST_CREATION, 0, '', true);
-    add_option(TRINITY_AUDIO_TRANSLATE, 0, '', true);
     add_option(TRINITY_AUDIO_FIRST_CHANGES_SAVE, 0, '', true);
   }
 
@@ -196,18 +192,11 @@
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO);
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_SOURCE_LANGUAGE);
 
-    // TODO: remove this setting after drop $_GET[postConfig]
-    register_setting(TRINITY_AUDIO, TRINITY_AUDIO_GENDER_ID);
-
     // allow to save to DB.
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_SOURCE_NEW_POSTS_DEFAULT);
-    register_setting(TRINITY_AUDIO, TRINITY_AUDIO_VOICE_ID);
-
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_PLAYER_LABEL);
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_POWERED_BY);
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_PRECONNECT);
-
-    register_setting(TRINITY_AUDIO, TRINITY_AUDIO_TRANSLATE);
 
     register_setting(TRINITY_AUDIO, TRINITY_AUDIO_FIRST_CHANGES_SAVE);
 

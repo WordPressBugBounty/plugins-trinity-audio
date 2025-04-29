@@ -1,18 +1,31 @@
-function updateVoiceValue() {
-  const voiceField = document.querySelector('#trinity_audio_voice_id.trinity-audio-metaboxes-element');
-  const languageField = document.querySelector('#trinity_audio_source_language');
-  const genderField = document.querySelector('#trinity_audio_gender_id');
+async function trinityMetaVoiceConfig() {
+  const {dispatch} = wp.data;
+  const editorDispatch = dispatch('core/editor');
 
-  if (!voiceField || !languageField || !genderField) return;
+  // Save original savePost
+  const originalSavePost = editorDispatch.savePost;
 
-  let languageVoices = languageField.selectedOptions?.[0].attributes['data-voices']?.value;
+  let originalConfig;
+  waitForExpression(() => window.TRINITY_UNIT_CONFIGURATION.getFormData).then(async () => {
+    originalConfig = await window.TRINITY_UNIT_CONFIGURATION.getFormData();
+  });
 
-  if (!languageVoices) return voiceField.value = '';
-  else languageVoices = JSON.parse(languageVoices);
+  // Replace savePost with our wrapper
+  editorDispatch.savePost = async (...args) => {
+    const formData = await window.TRINITY_UNIT_CONFIGURATION.getFormData();
 
-  const currentGender = genderField.value;
+    if (originalConfig && JSON.stringify(originalConfig) !== JSON.stringify(formData)) {
+      const voiceIdInputEl = document.getElementById('trinity_audio_voice_id');
+      voiceIdInputEl.value = formData.voiceId; // set public voiceId
 
-  voiceField.value = languageVoices[currentGender] || languageVoices[Object.keys(languageVoices)[0]];
+      // Good to save locale and not only voiceId, since if voiceId get removed, we have locale which we can rely on
+      const languageInputEl = document.getElementById('trinity_audio_source_language');
+      languageInputEl.value = formData.code;
+    }
+
+    // Continue with original save
+    return originalSavePost(...args);
+  };
 }
 
 function trinitySendMetricMeta(metric, additionalData) {
@@ -24,6 +37,17 @@ function trinitySendMetricMeta(metric, additionalData) {
       additionalData,
       action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_SEND_METRIC
     }
+  });
+}
+
+function waitForExpression(expressionFn) {
+  return new Promise((resolve) => {
+    const t = setInterval(() => {
+      if (!!expressionFn()) {
+        resolve();
+        clearInterval(t);
+      }
+    }, 1000);
   });
 }
 
@@ -90,5 +114,4 @@ function trinitySendMetricMeta(metric, additionalData) {
   }
 
   initTabPanel();
-  updateVoiceValue($);
 })(jQuery);

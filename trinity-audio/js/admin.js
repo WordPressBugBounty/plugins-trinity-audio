@@ -114,41 +114,6 @@ const $ = jQuery;
     });
   }
 
-  /**
-   * Disable genders that are not supported for particular languages.
-   * Switch back to default selected gender, when it's available.
-   */
-  function initLanguageSelect() {
-    const defaultSelectedGender = $('#trinity_audio_gender_id').val();
-
-    function callback() {
-      const lang = this.value;
-      const foundLang = TRINITY_WP_ADMIN.LANGUAGES.find(function (value) {
-        return value.code === lang;
-      });
-
-      if (foundLang) {
-        const genders = foundLang.genders;
-        $('#trinity_audio_gender_id option').each(function (key, el) {
-          const isEnabled = genders.includes(el.value) || el.value === '';
-
-          $(el).attr('disabled', !isEnabled);
-          if (!isEnabled) $(el).removeAttr('selected');
-        });
-
-        const shouldSelectEl = $('#trinity_audio_gender_id option[value="' + defaultSelectedGender + '"]:not([disabled])');
-        if (shouldSelectEl.length) {
-          shouldSelectEl.attr('selected', true);
-        } else {
-          $('#trinity_audio_gender_id option:not([disabled]):first').attr('selected', true)
-        }
-      }
-    }
-
-    $('#trinity_audio_source_language').change(callback);
-    $('#trinity_audio_source_language').change();
-  }
-
   function initContactUs() {
     const id = '#trinity-admin-contact-us';
     const submitButton = $(`${id} form button`);
@@ -194,7 +159,6 @@ const $ = jQuery;
     checkProgress(true);
   }, TRINITY_BULK_POLLING_TIMEOUT);
 
-  initLanguageSelect();
   initContactUs();
   $("#register-site").submit(trinityAudioOnRegisterFormSubmit);
   $("form[name=trinity_audio_post_management]").submit(trinityAudioOnPostManagementSubmit);
@@ -275,12 +239,12 @@ function trinityUpdateCustomSelectValue(name, value, code) {
 }
 
 async function isFormValid() {
-  return (await TRINITY_UNIT_CONFIGURATION.validate()).isValid;
+  return (await window.TRINITY_UNIT_CONFIGURATION.validate()).isValid;
 }
 
 // check if we need to disable/enable save button
 setInterval(async () => {
-  if (!window.TRINITY_UNIT_CONFIGURATION) return;
+  if (!window.TRINITY_UNIT_CONFIGURATION?.validate) return;
 
   const isValid = await isFormValid();
   if ($('.trinity-page .save-button').hasClass('submitted')) return; // don't remove disable class when form is submitted
@@ -302,12 +266,10 @@ async function trinityAudioOnSettingsFormSubmit(form, isInitialSave) {
     const {
       voice,
       voiceStyle,
-      engine,
       theme,
       language,
       speed,
       fab,
-      gender,
       showSettings,
       shareEnabled
     } = TRINITY_UNIT_CONFIGURATION.getFormData();
@@ -321,10 +283,8 @@ async function trinityAudioOnSettingsFormSubmit(form, isInitialSave) {
       data: {
         action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_UPDATE_UNIT_CONFIG,
         speed,
-        gender,
         language,
         voiceStyle,
-        engine,
         themeId: theme,
         voice,
         poweredBy: Number(form.elements.trinity_audio_poweredby.checked),

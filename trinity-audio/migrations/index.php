@@ -44,6 +44,8 @@
       $migrations = trinity_get_migration_scripts();
 
       foreach ($migrations as $migration) {
+        if (!str_ends_with($migration, '.php')) continue;
+
         $migration_version = str_replace('.php', '', $migration);
 
         if ($db_plugin_migration_version < $migration_version) {

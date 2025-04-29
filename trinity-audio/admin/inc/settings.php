@@ -16,12 +16,6 @@
 
   $package_data = trinity_get_package_data();
 
-  $languages = trinity_get_languages($package_data->package->isPremium);
-
-  if (!$languages) {
-    die(trinity_can_not_connect_error_message("<div class='notice notice-error'><p>Can't get list of supported languages.</p><p>") . '</p></div>');
-  }
-
   notifications($package_data);
   trinity_show_bulk_progress();
 ?>
@@ -101,14 +95,6 @@
               </label>
 
               <?php trinity_preconnect(); ?>
-            </div>
-
-            <div class="section-form-group" style="display: none">
-              <label class="section-form-title" for="<?php echo TRINITY_AUDIO_PRECONNECT; ?>">
-                Translate:
-              </label>
-
-              <?php trinity_translate(); ?>
             </div>
 
             <div class="section-form-group">
@@ -227,16 +213,6 @@
           </label>";
 
     echo '<p class="description">This option let you to choose if you want to improve player loading speed by using preconnect</p>';
-  }
-
-  function trinity_translate() {
-    echo "<label for='" . TRINITY_AUDIO_TRANSLATE . "' class='custom-checkbox'>
-            <div class='text-label'>
-            Translate
-            </div>
-            <input type='checkbox' name='" . TRINITY_AUDIO_TRANSLATE . "' id='" . TRINITY_AUDIO_TRANSLATE . "'>
-            <div class='custom-hitbox'></div>
-          </label>";
   }
 
   function trinity_skip_tags() {

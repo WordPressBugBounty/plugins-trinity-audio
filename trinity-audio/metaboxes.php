@@ -30,55 +30,28 @@
       $checked = 'checked';
     }
 
-    echo "<input type='checkbox' name='" . esc_attr(TRINITY_AUDIO_ENABLED) . "' id='" . esc_attr(TRINITY_AUDIO_ENABLED) . "'" . checked( $checked, 'checked', false ) . '/>';
-  }
-
-  function trinity_meta_source_gender($post_id) {
-    echo "<select onchange='updateVoiceValue()' name='" . esc_attr(TRINITY_AUDIO_GENDER_ID) . "' id='" . esc_attr(TRINITY_AUDIO_GENDER_ID) . "'>";
-
-    $post_gender = get_post_meta($post_id, TRINITY_AUDIO_GENDER_ID, true);
-    $genders     = array_merge(['' => TRINITY_AUDIO_LABEL_DEFAULT], TRINITY_AUDIO_GENDER_ARRAY);
-
-    foreach ($genders as $key => $value) {
-      $selected = $post_gender === $key ? 'selected' : '';
-
-      echo "<option value='" . esc_attr($key) . "' " . esc_attr($selected) . '>' . esc_html($value) . '</option>';
-    }
-
-    echo '</select>';
+    echo "<input type='checkbox' name='" . esc_attr(TRINITY_AUDIO_ENABLED) . "' id='" . esc_attr(TRINITY_AUDIO_ENABLED) . "'" . checked($checked, 'checked', false) . '/>';
   }
 
   function trinity_meta_source_language($post_id) {
-    $languages = trinity_get_languages();
+    $post_voice_id = get_post_meta($post_id, TRINITY_AUDIO_VOICE_ID, true);
+    $voice_config_widget_url = TRINITY_DASHBOARD_SERVICE . 'backend/v1/apps/unit-configuration/wp/' . trinity_get_install_key() . '?voice_selection_only=1&voice_id=' . $post_voice_id;
+    ?>
 
-    echo "<input type='hidden' name='" . esc_attr(TRINITY_AUDIO_VOICE_ID) . "' id='" . esc_attr(TRINITY_AUDIO_VOICE_ID) . "' class='trinity-audio-metaboxes-element'/>";
-    echo "<select onchange='updateVoiceValue()' name='" . esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE) . "' id='" . esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE) . "'>";
+    <script defer src="<?= $voice_config_widget_url ?>"></script>
+    <script>
+        jQuery(document).ready(async () => {
+          await trinityMetaVoiceConfig();
+        });
+    </script>
 
-    $post_language    = get_post_meta($post_id, TRINITY_AUDIO_SOURCE_LANGUAGE, true);
-    $result_languages = array_merge(
-      [
-        (object)[
-          'code' => '',
-          'name' => TRINITY_AUDIO_LABEL_DEFAULT,
-        ],
-      ],
-      $languages
-    );
-
-    foreach ($result_languages as $lang) {
-      $language_code = $lang->code;
-      $language_name = $lang->name;
-
-      if (isset($lang->voices)) $voicesEncoded = json_encode($lang->voices);
-      else $voicesEncoded = '';
-
-
-      $selected = $post_language === $language_code ? 'selected' : '';
-
-      echo "<option data-voices='$voicesEncoded' value='" . esc_attr($language_code) . "' " . esc_attr($selected) . '>' . esc_html($language_name) . '</option>';
-    }
-
-    echo '</select>';
+    <input type='hidden' name="<?php echo esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
+         id="<?php echo esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
+         class="trinity-audio-metaboxes-element" />
+    <input type='hidden' name="<?php echo esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
+         id="<?php echo esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
+         class="trinity-audio-metaboxes-element" />
+  <?php
   }
 
   function trinity_audio_box_content($post) {
@@ -104,9 +77,9 @@
         <div data-id="main" class="content is-active">
           <table class="form-table">
             <tr>
-              <th style="width: 250px;">
+              <th>
                 <label for="<?php echo esc_attr(TRINITY_AUDIO_ENABLED); ?>">
-                  Enable Text-To-Speech (Trinity audio):
+                  Enable TTS (Trinity audio):
                 </label>
               </th>
               <td>
@@ -120,15 +93,7 @@
             </tr>
             <tr>
               <th>
-                <label for="<?php echo esc_attr(TRINITY_AUDIO_GENDER_ID); ?>">Gender:</label>
-              </th>
-              <td>
-                <?php trinity_meta_source_gender($post->ID); ?>
-              </td>
-            </tr>
-            <tr>
-              <th>
-                <label for="<?php echo esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>">Language:</label>
+                <label for="<?php echo esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>">Voice:</label>
               </th>
               <td>
                 <?php trinity_meta_source_language($post->ID); ?>

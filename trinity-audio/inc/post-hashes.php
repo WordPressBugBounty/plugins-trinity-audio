@@ -231,9 +231,6 @@
     if (isset($_POST[TRINITY_AUDIO_NONCE_NAME]) && wp_verify_nonce($_POST[TRINITY_AUDIO_NONCE_NAME], 'trinity-audio-metabox')) {
       trinity_audio_enable_player_for_post_id($post_id, $is_enable);
 
-      // Update post gender
-      update_post_meta($post_id, TRINITY_AUDIO_GENDER_ID, sanitize_text_field($_POST[TRINITY_AUDIO_GENDER_ID]));
-
       // Update post source language
       update_post_meta($post_id, TRINITY_AUDIO_SOURCE_LANGUAGE, sanitize_text_field($_POST[TRINITY_AUDIO_SOURCE_LANGUAGE]));
 
