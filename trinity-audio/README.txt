@@ -152,6 +152,11 @@ Generated audio posts will be available for consumption regardless of package st
 7. Trusted by leading media publications and content creators.
 
 == Changelog ==
+
+= 5.20.1 =
+ *Release Date - May 30, 2025*
+ * Added nonce-based CSRF protection for the audio registration process
+
 = 5.20.0 =
  *Release Date - Apr 29, 2025*
  * Implemented a new voice selector component at the post level

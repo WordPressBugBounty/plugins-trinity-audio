@@ -336,7 +336,8 @@ function trinityAudioOnRegisterFormSubmit(e) {
       action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_REGISTER,
       recover_installkey: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_RECOVER_INSTALLKEY).val(),
       publisher_token: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN).val(),
-      email_subscription: Number(jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_EMAIL_SUBSCRIPTION)[0].checked)
+      email_subscription: Number(jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_EMAIL_SUBSCRIPTION)[0].checked),
+      _wpnonce: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_REGISTER_NONCE
     },
     success: function (response) {
       if (response.code !== TRINITY_REGISTRATION_RESPONSE_CODE.SUCCESS) {

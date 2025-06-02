@@ -61,7 +61,8 @@
         'TRINITY_AUDIO_UPDATE_UNIT_CONFIG'   => TRINITY_AUDIO_UPDATE_UNIT_CONFIG,
         'TRINITY_AUDIO_SEND_METRIC'          => TRINITY_AUDIO_SEND_METRIC,
         'TRINITY_AUDIO_REMOVE_POST_BANNER'   => TRINITY_AUDIO_REMOVE_POST_BANNER,
-        'TRINITY_AUDIO_PACKAGE_INFO'         => TRINITY_AUDIO_PACKAGE_INFO
+        'TRINITY_AUDIO_PACKAGE_INFO'         => TRINITY_AUDIO_PACKAGE_INFO,
+        'TRINITY_AUDIO_REGISTER_NONCE'       => wp_create_nonce('trinity_audio_register_nonce')
       ]
     );
   }
@@ -265,6 +266,10 @@
   }
 
   function trinity_audio_ajax_register() {
+    if (!isset($_POST['_wpnonce']) || !check_ajax_referer('trinity_audio_register_nonce', '_wpnonce')) {
+        wp_send_json_error(array('message' => 'Nonce verification failed.'));
+        wp_die();
+    }
     trinity_register();
     wp_die();
   }
