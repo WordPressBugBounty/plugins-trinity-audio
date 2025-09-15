@@ -433,7 +433,8 @@
       'fab'          => $_GET['fab'],
       'powered_by'   => $_GET['poweredBy'],
       'showSettings' => $_GET['showSettings'],
-      'shareEnabled' => $_GET['shareEnabled']
+      'shareEnabled' => $_GET['shareEnabled'],
+      'audioVariantId' => $_GET['audioVariantId']
     ];
 
     trinity_curl_post(

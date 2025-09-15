@@ -153,6 +153,11 @@ Generated audio posts will be available for consumption regardless of package st
 
 == Changelog ==
 
+= 5.20.2 =
+ *Release Date - Sep 15, 2025*
+ * Added supporting of "Read author" setting option
+
+
 = 5.20.1 =
  *Release Date - May 30, 2025*
  * Added nonce-based CSRF protection for the audio registration process

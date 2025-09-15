@@ -271,7 +271,8 @@ async function trinityAudioOnSettingsFormSubmit(form, isInitialSave) {
       speed,
       fab,
       showSettings,
-      shareEnabled
+      shareEnabled,
+      audioVariantId
     } = TRINITY_UNIT_CONFIGURATION.getFormData();
     const saveButton = $('.trinity-page .save-button');
 
@@ -290,7 +291,8 @@ async function trinityAudioOnSettingsFormSubmit(form, isInitialSave) {
         poweredBy: Number(form.elements.trinity_audio_poweredby.checked),
         fab,
         showSettings: Number(showSettings),
-        shareEnabled: Number(shareEnabled)
+        shareEnabled: Number(shareEnabled),
+        audioVariantId: audioVariantId ? Number(audioVariantId) : ''
       },
       complete() {
         form.submit();
