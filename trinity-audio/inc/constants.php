@@ -28,6 +28,7 @@
   define('TRINITY_AUDIO_INFO_HTML', TRINITY_AUDIO_LOG_DIR . '/' . TRINITY_AUDIO_INFO_FILE_PART_NAME . '-' . get_log_prefix() . '.html');
 
   const BREAK_MACRO = '⏸';
+  const TRINITY_AUDIO_BANNER_TTL_SECONDS = 7 * 24 * 60 * 60;
   const BLOCK_MACRO = '▇';
 
   abstract class TRINITY_AUDIO_ERROR_TYPES {
@@ -82,7 +83,8 @@
 
   const TRINITY_AUDIO_POST_HASH = 'trinity_audio_post_hash';
 
-  const TRINITY_AUDIO_NONCE_NAME = 'trinity-audio-post-nonce';
+  const TRINITY_AUDIO_NONCE_NAME = '_trinity_wp_nonce';
+  const TRINITY_AUDIO_AJAX_NONCE_NAME = '_trinity_ajax_nonce';
 
   const TRINITY_AUDIO = 'trinity_audio';
 
@@ -111,44 +113,6 @@
   ];
 
   const TRINITY_AUDIO_FEEDBACK_MESSAGE = 'trinity_audio_feedback_message';
-
-  const TRINITY_AUDIO_PACKAGES_DATA = array(
-    'Free'      => array(
-      'translation'     => 'No',
-      'description'     => 'For blog and content creators with up to 5 articles per month',
-      'player_features' => 'No',
-      'support'         => 'No',
-      'dashboard'       => 'No'
-    ),
-    'Wordpress' => array(
-      'translation'     => 'No',
-      'description'     => 'For blog and content creators with up to 5 articles per month',
-      'player_features' => 'No',
-      'support'         => 'No',
-      'dashboard'       => 'No'
-    ),
-    'Basic'     => array(
-      'translation'     => 'Yes',
-      'description'     => 'Perfect for Blogs & Small publications',
-      'player_features' => 'Basic',
-      'support'         => 'Up to 2 business days',
-      'dashboard'       => 'No'
-    ),
-    'Standard'  => array(
-      'translation'     => 'Yes',
-      'description'     => 'Perfect for medium publications with larger content volume',
-      'player_features' => 'Upgraded',
-      'support'         => 'Up to 1 business days',
-      'dashboard'       => 'Yes'
-    ),
-    'Premium'   => array(
-      'translation'     => 'Yes',
-      'description'     => 'A custom solution for all publications',
-      'player_features' => 'Custom',
-      'support'         => '24/7',
-      'dashboard'       => 'Yes'
-    ),
-  );
 
   const TRINITY_AUDIO_POST_MANAGEMENT_SUCCESS_MESSAGES = [
     'activate-all-posts'       => 'Trinity Audio Player enabled for all ##AMOUNT## posts',

@@ -408,14 +408,16 @@
   transition: all 200ms ease-out;
   box-sizing: border-box;
   text-transform: uppercase;
-  width: 100px;
-  justify-content: center;
-  align-items: center;
-  float: right;
 }
 .trinity-contact-us-button:hover {
   background: #951d51;
   transition: all 200ms ease-out;
+}
+.trinity-contact-us-button {
+  width: 100px;
+  justify-content: center;
+  align-items: center;
+  float: right;
 }
 
 .trinity-send-wrapper {
@@ -446,6 +448,12 @@
   transition: all 200ms ease-out;
   box-sizing: border-box;
   text-transform: uppercase;
+}
+.trinity-feedback-button:hover {
+  background: #951d51;
+  transition: all 200ms ease-out;
+}
+.trinity-feedback-button {
   background: #000030;
   width: 100px;
   float: right;
@@ -453,10 +461,6 @@
   margin-bottom: 15px;
   justify-content: center;
   align-items: center;
-}
-.trinity-feedback-button:hover {
-  background: #951d51;
-  transition: all 200ms ease-out;
 }
 .trinity-feedback-button:hover {
   background: #414674;
@@ -599,7 +603,7 @@
   font-size: 16px;
   font-weight: 300;
 }
-.trinity-page .register .description .bold-text {
+.trinity-page .register .description .trinity-bold-text {
   color: #777777;
   font-weight: 500;
 }
@@ -718,15 +722,17 @@
   transition: all 200ms ease-out;
   box-sizing: border-box;
   text-transform: uppercase;
+}
+#trinity-metabox .trinity-meta-upgrade-banner .container .upgrade-button:hover {
+  background: #951d51;
+  transition: all 200ms ease-out;
+}
+#trinity-metabox .trinity-meta-upgrade-banner .container .upgrade-button {
   background: #010031;
   text-decoration: none;
   bottom: 10px;
   left: 10px;
   width: 200px;
-}
-#trinity-metabox .trinity-meta-upgrade-banner .container .upgrade-button:hover {
-  background: #951d51;
-  transition: all 200ms ease-out;
 }
 #trinity-metabox .trinity-meta-upgrade-banner .container .footnote {
   font-size: 12px;
@@ -883,13 +889,15 @@
   transition: all 200ms ease-out;
   box-sizing: border-box;
   text-transform: uppercase;
-  background: #010031;
-  width: 100%;
-  text-decoration: none;
 }
 .trinity-page .premium-banner .upgrade-button:hover {
   background: #951d51;
   transition: all 200ms ease-out;
+}
+.trinity-page .premium-banner .upgrade-button {
+  background: #010031;
+  width: 100%;
+  text-decoration: none;
 }
 .trinity-page .premium-banner .upgrade-odds {
   display: flex;
@@ -1023,15 +1031,15 @@
   height: 31px;
   color: #7f7f97;
 }
-.trinity-page .trinity-section-body.plan-section .feature-title {
-  font-weight: 600;
-}
 .trinity-page .trinity-section-body.plan-section .feature-title.large-title {
   line-height: 50px;
 }
 .trinity-page .trinity-section-body.plan-section .feature-title.large-title span {
   font-weight: 800;
   font-size: 40px;
+}
+.trinity-page .trinity-section-body.plan-section .feature-title {
+  font-weight: 600;
 }
 .trinity-page .trinity-section-body.plan-section .feature-description {
   font-size: 14px;
@@ -1046,9 +1054,6 @@
   color: #777777;
   font-size: 20px;
 }
-.trinity-page .trinity-section-body.plan-section .verified-message {
-  color: #00cc66;
-}
 .trinity-page .trinity-section-body.plan-section .verified-message:before {
   width: 20px;
   height: 20px;
@@ -1061,6 +1066,9 @@
   border-radius: 50%;
   margin-right: 6px;
   background-image: url("../assets/icons/check.svg");
+}
+.trinity-page .trinity-section-body.plan-section .verified-message {
+  color: #00cc66;
 }
 .trinity-page .trinity-section-body.plan-section .verified-message ~ div, .trinity-page .trinity-section-body.plan-section .advanced-features {
   margin-top: 15px;
@@ -1112,11 +1120,13 @@
   transition: all 200ms ease-out;
   box-sizing: border-box;
   text-transform: uppercase;
-  width: 100%;
 }
 .trinity-page .save-button:hover {
   background: #951d51;
   transition: all 200ms ease-out;
+}
+.trinity-page .save-button {
+  width: 100%;
 }
 .trinity-page .save-button.width-auto {
   width: auto !important;
@@ -1162,14 +1172,16 @@
   transition: all 200ms ease-out;
   box-sizing: border-box;
   text-transform: uppercase;
-  min-width: 115px;
-  background: transparent;
-  color: #FF0066 !important;
-  border: #FF0066 solid 1px;
 }
 .trinity-page .trinity-save-account .use-account-key-button:hover {
   background: #951d51;
   transition: all 200ms ease-out;
+}
+.trinity-page .trinity-save-account .use-account-key-button {
+  min-width: 115px;
+  background: transparent;
+  color: #FF0066 !important;
+  border: #FF0066 solid 1px;
 }
 .trinity-page .trinity-save-account .use-account-key-button:hover {
   color: white !important;
@@ -1191,6 +1203,40 @@
 }
 .trinity-page .underline {
   text-decoration: underline;
+}
+.trinity-page .loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.trinity-page .loader {
+  width: 36px;
+  height: 36px;
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #FF0066;
+  -webkit-animation: trinity-spin 2s linear infinite; /* Safari */
+  animation: trinity-spin 2s linear infinite;
+}
+.trinity-page {
+  /* Safari */
+}
+@-webkit-keyframes trinity-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes trinity-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .trinity-notification {
@@ -1265,7 +1311,15 @@
   background-color: #00CC66;
 }
 
-.components-tab-panel__tabs {
+.trinity-hide {
+  display: none !important;
+}
+
+.trinity-section-body .trinity-inner td {
+  padding: 5px 10px;
+}
+
+#trinity-metabox .components-tab-panel__tabs {
   background: #f3f4f5;
   display: flex;
   align-items: center;
@@ -1274,7 +1328,7 @@
   border-top: 1px solid #e2e4e7;
   border-bottom: 1px solid #e2e4e7;
 }
-.components-tab-panel__tabs .components-button {
+#trinity-metabox .components-tab-panel__tabs .components-button {
   height: 100%;
   outline: none !important;
   box-shadow: none !important;
@@ -1284,16 +1338,10 @@
   border-bottom: 3px solid transparent;
   padding: 0 15px;
 }
-.components-tab-panel__tabs .components-button.is-active {
+#trinity-metabox .components-tab-panel__tabs .components-button.is-active {
   border-bottom: 3px solid #007cba;
   font-weight: bold;
 }
-
-.trinity-hide,
-.trinity-phpinfo iframe {
-  display: none !important;
-}
-
 #trinity-metabox .components-tab-panel__tab-content select {
   min-width: 130px;
 }
@@ -1406,41 +1454,6 @@
   margin-right: 15px;
 }
 
-.bold-text {
+.trinity-bold-text {
   font-weight: 700;
-}
-
-.loader-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.loader {
-  width: 36px;
-  height: 36px;
-  border: 5px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 5px solid #FF0066;
-  -webkit-animation: spin 2s linear infinite; /* Safari */
-  animation: spin 2s linear infinite;
-}
-
-/* Safari */
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
-}
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }

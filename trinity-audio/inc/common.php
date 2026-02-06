@@ -218,8 +218,8 @@
     $trinity_url = TRINITY_AUDIO_STARTUP . $viewkey . '/';
 
     add_filter('perfmatters_delay_js_exclusions', function($exclusions) {
-      $exclusions[] = '/player/trinity/';
-      $exclusions[] = '/plugins/trinity/';
+      $exclusions[] = '/player/trinity-audio/';
+      $exclusions[] = '/plugins/trinity-audio/';
       $exclusions[] = 'trinity_tts_wp_config'; // inline script with ID="trinity_tts_wp_config" which injects TRINITY_TTS_WP_CONFIG
 
       return $exclusions;
@@ -247,6 +247,8 @@
   }
 
   function trinity_save_publisher_token() {
+    check_ajax_referer('assign_account_key_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     $data = trinity_get_env_details();
 
     $postData = [
@@ -272,6 +274,8 @@
   }
 
   function trinity_audio_ajax_contact_us() {
+    check_ajax_referer('contact_us_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     header('Content-type: application/json');
 
     $is_include_log = isset($_POST['include_log']);
@@ -291,8 +295,7 @@
       $data['info'] = curl_file_create(TRINITY_AUDIO_INFO_HTML);
     }
 
-    $postData = array_merge($data, filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING));
-
+    $postData = array_merge($data, array_map('sanitize_text_field', $_POST));
     $ch = curl_init(TRINITY_AUDIO_CONTACT_US_URL);
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -305,11 +308,11 @@
 
     if (!isset($responseData->ok) || $ch === false) {
       http_response_code(500);
-      echo 'Error Code: ' . curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      echo 'Error Body: ' . curl_error($ch);
+      echo esc_html('Error Code: ' . curl_getinfo($ch, CURLINFO_HTTP_CODE));
+      echo esc_html('Error Body: ' . curl_error($ch));
     }
 
-    wp_die($response);
+    wp_send_json($responseData);
   }
 
   function trinity_get_posts($offset = 0, $size = -1): array {
@@ -406,23 +409,9 @@
     );
   }
 
-  function trinity_send_stat_update_settings() {
-    $data = [
-      'installkey' => trinity_get_install_key(), // need for auth
-      'powered_by' => trinity_get_powered_by()
-    ];
-
-    trinity_curl_post(
-      [
-        'post_data'     => $data,
-        'url'           => TRINITY_AUDIO_UPDATE_PLUGIN_CONFIG_URL,
-        'error_message' => trinity_can_not_connect_error_message('Can\'t update plugin details.'),
-        'die'           => false
-      ]
-    );
-  }
-
   function trinity_audio_ajax_update_unit_config() {
+    check_ajax_referer('update_unit_config_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     $data = [
       'installkey'   => trinity_get_install_key(),
       'speed'        => $_GET['speed'],
@@ -460,6 +449,8 @@
   }
 
   function trinity_send_stat_metrics() {
+    check_ajax_referer('send_metric_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     $data = [
       'metric'         => $_POST['metric'],
       'additionalData' => $_POST['additionalData'] ?? null
@@ -475,7 +466,8 @@
   }
 
   function trinity_audio_ajax_remove_post_banner() {
-    update_option(TRINITY_AUDIO_REMOVE_POST_BANNER, '0');
+    check_ajax_referer('remove_post_banner_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+    update_option(TRINITY_AUDIO_REMOVE_POST_BANNER, time());
   }
 
   function send_response($code) {
@@ -487,11 +479,11 @@
 
       'ERROR' => 'Can\'t activate plugin. Please contact us ' . TRINITY_AUDIO_SUPPORT_EMAIL_LINK . " and provide your domain: <strong>{$site}</strong>",
 
-      'ALREADY_REGISTERED' => "It seems like your site <strong>{$site}</strong> is already registered to our services. In order to protect your assets, we do not allow duplicated registrations. <br/> If you've registered before and migrated into a new database/hosting service - please use the form below to insert the <span class='bold-text'>Install Key</span> if you have one, otherwise contact us at " . TRINITY_AUDIO_SUPPORT_EMAIL_LINK . ' to help resolve this issue.',
+      'ALREADY_REGISTERED' => "It seems like your site <strong>{$site}</strong> is already registered to our services. In order to protect your assets, we do not allow duplicated registrations. <br/> If you've registered before and migrated into a new database/hosting service - please use the form below to insert the <span class='trinity-bold-text'>Install Key</span> if you have one, otherwise contact us at " . TRINITY_AUDIO_SUPPORT_EMAIL_LINK . ' to help resolve this issue.',
 
       'WRONG_INSTALLKEY' => 'We can see that the following value has changed in your database <strong>wp_options.trinity_audio_installkey</strong>. If you know how to revert the change, please do. If not, please write to us at ' . TRINITY_AUDIO_SUPPORT_EMAIL_LINK . ' and we will respond as fast as we can.',
 
-      'WRONG_PUBLISHER_TOKEN' => '<span class="bold-text">Account Key</span> is not found - please verify you have the correct one. If the problem persists, please write to us at ' . TRINITY_AUDIO_SUPPORT_EMAIL_LINK . ' and we will respond as fast as we can.',
+      'WRONG_PUBLISHER_TOKEN' => '<span class="trinity-bold-text">Account Key</span> is not found - please verify you have the correct one. If the problem persists, please write to us at ' . TRINITY_AUDIO_SUPPORT_EMAIL_LINK . ' and we will respond as fast as we can.',
 
       'ALREADY_ASSIGNED_PUBLISHER_TOKEN' => "It seems like your installation is already assigned to your Trinity Account. If it's not reflected on the <a href='" . trinity_add_utm_to_url(TRINITY_AUDIO_DASHBOARD_URL) . "' target='_blank'>Trinity Dashboard</a> please contact us at " . TRINITY_AUDIO_SUPPORT_EMAIL_LINK . ' to help resolve this issue.',
 
@@ -530,8 +522,6 @@
       }
 
       set_transient(TRINITY_AUDIO_FIRST_TIME_INSTALL, true, 60);
-
-      trinity_send_stat_update_settings();
 
       send_response($response_code);
     }
@@ -586,7 +576,7 @@
     $error_msg = trinity_get_notice_error_message("Can't get plan data.");
     $result    = trinity_curl_get(TRINITY_AUDIO_CREDITS_URL . '?installkey=' . trinity_get_install_key(), $error_msg, false);
 
-    if (!$result) die($error_msg);
+    if (!$result) die(esc_html($error_msg));
 
     return json_decode($result);
   }
@@ -595,7 +585,7 @@
     $error_msg = trinity_get_notice_error_message("Can't get plugin configuration.");
     $result    = trinity_curl_get(TRINITY_AUDIO_UPDATE_PLUGIN_CONFIG_URL . '?installkey=' . trinity_get_install_key(), $error_msg, false);
 
-    if (!$result) die($error_msg);
+    if (!$result) die(esc_html($error_msg));
 
     return json_decode($result);
   }
@@ -610,7 +600,7 @@
       }
 
       if ($notification && property_exists($notification, 'message_html')) {
-        echo htmlspecialchars_decode($notification->message_html);
+        echo wp_kses_post($notification->message_html);
       }
     }
 
@@ -623,7 +613,7 @@
       echo "<div class='trinity-notification'>
               <span>
                 You have a maxed out your plan usage!
-                <a class='bold-text' target='_blank' href='" . trinity_add_utm_to_url(TRINITY_AUDIO_PRICING_URL) . "'>Upgrade your plan</a>        
+                <a class='trinity-bold-text' target='_blank' href='" . esc_html(trinity_add_utm_to_url(TRINITY_AUDIO_PRICING_URL)) . "'>Upgrade your plan</a>        
               </span>
               <span class='trinity-notification-close'></span>
             </div>";
@@ -640,4 +630,8 @@
   function trinity_get_upgrade_url() {
     if (trinity_get_is_account_key_linked()) return TRINITY_AUDIO_UPGRADE_URL;
     return TRINITY_AUDIO_PRICING_URL;
+  }
+
+  function trinity_check_post_nonce($action) {
+    if (!wp_verify_nonce($_POST[TRINITY_AUDIO_NONCE_NAME], $action)) die(esc_html("Security check failed for $action"));
   }

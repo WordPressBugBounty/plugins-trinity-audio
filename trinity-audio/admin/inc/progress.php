@@ -27,15 +27,15 @@
         <span class="name">Install</span>
         <div class="node"></div>
     </div>
-    <div class="step <?php echo trinity_get_is_first_changes_saved() ? 'complete' : '' ?>">
+    <div class="step <?= trinity_get_is_first_changes_saved() ? 'complete' : '' ?>">
         <span class="name">
-            <a href="<?php echo admin_url('admin.php?page=trinity_audio') ?>">Configure</a>
+            <a href="<?= esc_url(admin_url('admin.php?page=trinity_audio')) ?>">Configure</a>
         </span>
         <div class="node"></div>
     </div>
-    <div class="step <?php echo trinity_get_is_first_changes_saved() && trinity_is_any_post_enabled() ? 'complete' : '' ?>">
+    <div class="step <?= trinity_get_is_first_changes_saved() && trinity_is_any_post_enabled() ? 'complete' : '' ?>">
         <span class="name">
-            <a href="<?php echo admin_url('admin.php?page=trinity_audio_post_management') ?>">Activate</a>
+            <a href="<?= esc_url(admin_url('admin.php?page=trinity_audio_post_management')) ?>">Activate</a>
         </span>
         <div class="node"></div>
     </div>

@@ -53,8 +53,7 @@
 
     if ($package_name === 'Wordpress') $package_name = 'Free';
 
-    $packageInfo = TRINITY_AUDIO_PACKAGES_DATA[$package_name];
-    $cap_type    = $package_data->capType;
+    $cap_type = $package_data->capType;
 
     $result['html'] .= "<div class='plan-banner-wrapper'>
           <div class='current-plan-wrapper'>
@@ -65,25 +64,24 @@
     } else {
       $package_articles_used  = $package_data->used ?? 0;
       $package_articles_total = $package_data->packageLimit ?? 0;
-      $articles_per_month     = "<span class='bright'>$package_articles_used</span><span class='articles-limit'> / $package_articles_total</span>";
+      $articles_per_month     = "<span class='bright'>" . esc_html($package_articles_used) . "</span><span class='articles-limit'> / " . esc_html($package_articles_total) . "</span>";
     }
 
-    $result['html'] .= "<div class='plan-name'>{$package_name}</div>
-            <div class='description'>{$packageInfo['description']}</div>";
+    $result['html'] .= "<div class='plan-name'>" . esc_html($package_name) . "</div>";
 
     if ($cap_type === 'chars') {
       $formatted_credits = number_format($package_data->credits);
-      $result['html']    .= "<div class='credits-used feature-title large-title'>Credits left: <span class='bright'>$formatted_credits</span></div>
+      $result['html']    .= "<div class='credits-used feature-title large-title'>Credits left: <span class='bright'>" . esc_html($formatted_credits) . "</span></div>
             <div class='feature-description bottom-space-10'></div>";
-    } else if ($cap_type === 'articles') {
-      $result['html'] .= "<div class='section-form-title'>Articles used:</div>";
-      $result['html'] .= "<div class='credits-used feature-title large-title'>$articles_per_month</div>";
+    } else if ($cap_type === 'articles' || $cap_type === 'audios') {
+      $result['html'] .= "<div class='section-form-title'>Credits used:</div>";
+      $result['html'] .= "<div class='credits-used feature-title large-title'>" . wp_kses_post($articles_per_month) . "</div>";
     }
 
-    if (!empty($next_refresh_at_formatted)) $result['html'] .= "<div class='next-refresh-at'><span class='renew-at-label'>Renew at </span><span class='renew'>$next_refresh_at_formatted</span></div>";
+    if (!empty($next_refresh_at_formatted)) $result['html'] .= "<div class='next-refresh-at'><span class='renew-at-label'>Renew at </span><span class='renew'>" . esc_html($next_refresh_at_formatted) . "</span></div>";
 
     if ($cap_type !== 'no_limit' && $package_name !== 'Premium') {
-      $result['html'] .= "<div>Need more articles? <a href='" . trinity_add_utm_to_url(trinity_get_upgrade_url(), 'wp_admin', 'subscription_panel') . "' target='_blank'>Try a different plan</a></div>";
+      $result['html'] .= "<div>Need more articles? <a href='" . esc_url(trinity_add_utm_to_url(trinity_get_upgrade_url(), 'wp_admin', 'subscription_panel')) . "' target='_blank'>Try a different plan</a></div>";
     }
 
     $result['html'] .= "</div></div>";
@@ -97,7 +95,7 @@
                 <div class='edit-icon'>
                   <span>✎</span>
                 </div>
-                <input placeholder='Enter new Account key' class='custom-input description' type='text' value='$account_key' name='" . TRINITY_AUDIO_PUBLISHER_TOKEN . "' id='" . TRINITY_AUDIO_PUBLISHER_TOKEN . "' disabled>
+                <input placeholder='Enter new Account key' class='custom-input description' type='text' value='" . esc_attr($account_key) . "' name='" . esc_attr(TRINITY_AUDIO_PUBLISHER_TOKEN) . "' id='" . esc_attr(TRINITY_AUDIO_PUBLISHER_TOKEN) . "' disabled>
                 <div class='publisher-token-notification'></div>
                 <div class='trinity-save-account trinity-hide'>
                   <div class='use-account-key-button'>Save key</div>
@@ -106,10 +104,10 @@
               </div>";
 //      }
 
-      $result['html'] .= "<div class='advanced-features'><a href='" . trinity_add_utm_to_url(TRINITY_AUDIO_DASHBOARD_URL) . "' target='_blank'>Manage Advanced Features</a></div>";
+      $result['html'] .= "<div class='advanced-features'><a href='" . esc_url(trinity_add_utm_to_url(TRINITY_AUDIO_DASHBOARD_URL)) . "' target='_blank'>Manage Advanced Features</a></div>";
     } else {
       $result['html'] .= "<div class='token-label'>Account key:</div>
-            <input spellcheck='false' placeholder='Enter Account key' type='text' class='custom-input inline-block' value='' name='" . TRINITY_AUDIO_PUBLISHER_TOKEN . "' id='" . TRINITY_AUDIO_PUBLISHER_TOKEN . "' />
+            <input spellcheck='false' placeholder='Enter Account key' type='text' class='custom-input inline-block' value='' name='" . esc_attr(TRINITY_AUDIO_PUBLISHER_TOKEN) . "' id='" . esc_attr(TRINITY_AUDIO_PUBLISHER_TOKEN) . "' />
             <div class='publisher-token-notification'></div>
             <div class='trinity-save-account'>
               <p class='description'>For <span class='underline'>subscribed</span> clients, please insert the account key received from the Trinity Audio dashboard.</p>
@@ -125,10 +123,14 @@
   function trinity_current_package_info_template($package_data) {
     $result = trinity_get_package_template($package_data);
 
-    echo $result['html'];
+      // all the HTML is escaped in the function trinity_get_package_template()
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+      echo $result['html'];
   }
 
   function trinity_get_and_render_package() {
+    check_ajax_referer('get_package_info_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     $package_data = trinity_get_package_data();
     $result       = trinity_get_package_template($package_data, $_GET['retryNumber']);
 
@@ -142,12 +144,13 @@
           <div class="upgrade-plan">Upgrade your Trinity Audio plan</div>
           <div class="upgrade-odds">
               <ul>
-                  <li>Convert more article</li>
-                  <li>Natural voices & accents</li>
-                  <li>Edit & customize your audio</li>
+                  <li>Get more credits</li>
+                  <li>GenAI voices</li>
+                  <li>Create podcasts</li>
+                  <li>Monetize your content</li>
               </ul>
           </div>
-          <a href="<?= trinity_add_utm_to_url(trinity_get_upgrade_url(), 'wp_admin', 'upgrade_banner') ?>"
+          <a href="<?= esc_url(trinity_add_utm_to_url(trinity_get_upgrade_url()), 'wp_admin', 'upgrade_banner') ?>"
              target="_blank" class="upgrade-button">Upgrade to premium</a>
       </div>
     <?php
@@ -160,7 +163,7 @@
         <p class='info-text install-key trinity-show-recovery-token-button'>
           <a>Get my token</a>
         </p>
-        <p class='info-text install-key hidden'>$installkey</p>";
+        <p class='info-text install-key hidden'>" . esc_html($installkey) . "</p>";
   }
 
   function trinity_show_recovery_token_inline() {
@@ -170,21 +173,29 @@
         <span class='info-text install-key trinity-show-recovery-token-button inline'>
           <a>Get my token</a>.
         </span>
-        <span class='info-text install-key hidden'>$installkey</span>";
+        <span class='info-text install-key hidden'>" . esc_html($installkey) . "</span>";
   }
 
   function trinity_post_management_banner() {
-    $messages    = [
-      "Get additional credits to convert more content into audio each month.",
-      "Create and edit pronunciation rules for accuracy and the highest level of audio experience.",
-      "Get access to premium and natural-sounding AI voices.",
-      "Get access to your personal dashboard with usability analytics.",
-      "Select the player’s theme that best suits your website’s branding elements."
+    $messages = [
+      "Convert unlimited articles with premium voices and advanced features.",
+      "Get detailed analytics and insights about your audio engagement.",
+      "Access voice cloning and custom pronunciation controls.",
+      "Distribute your audio content to Spotify, Apple, and Google Podcasts.",
+      "Access AI-powered content summaries and background music.",
+      "Clone your own voice for consistent brand narration.",
+      "Add background music and create professional podcast episodes."
     ];
-    $message     = array_rand($messages);
-    $show_banner = get_option(TRINITY_AUDIO_REMOVE_POST_BANNER);
+    $message = array_rand($messages);
+    
+    $banner_dismissed_time = get_option(TRINITY_AUDIO_REMOVE_POST_BANNER);
+    $should_show_banner = true;
+    
+    if ($banner_dismissed_time) {
+      $should_show_banner = (time() - intval($banner_dismissed_time)) > TRINITY_AUDIO_BANNER_TTL_SECONDS;
+    }
 
-    if ($show_banner !== '0'): ?>
+    if ($should_show_banner): ?>
         <div class="container">
             <div class="header">
                 <div class="icon">
@@ -215,11 +226,11 @@
             </span>
             </div>
 
-            <p class="message"><?= $messages[$message] ?></p>
+            <p class="message"><?= esc_html($messages[$message]) ?></p>
 
             <div>
-                <a onclick="trinitySendMetricMeta('wordpress.post.banner.visit', '<?= trinity_get_plugin_version() ?>');"
-                   href="<?= trinity_add_utm_to_url(trinity_get_upgrade_url(), 'wp_post', 'upgrade_banner') ?>"
+                <a onclick="trinitySendMetricMeta('wordpress.post.banner.visit', '<?= esc_attr(trinity_get_plugin_version()) ?>');"
+                   href="<?= esc_url(trinity_add_utm_to_url(trinity_get_upgrade_url(), 'wp_post', 'upgrade_banner')) ?>"
                    class="upgrade-button" target="_blank">
                     Upgrade to premium
                 </a>
@@ -238,7 +249,7 @@
             Credits left:
         </div>
       <?php
-      echo "<p>$package_data->credits</p>";
+      echo "<p>" . esc_html($package_data->credits) . "</p>";
       echo '<p class="description">Shows the amount of credits available to generate audio for new posts</p>';
     } else if ($cap_type === 'articles') {
       ?>
@@ -246,7 +257,7 @@
             Number of articles:
         </div>
       <?php
-      echo "<p><span class='bold-text'>{$package_data->used}</span> / {$package_data->packageLimit}</p>";
+      echo "<p><span class='trinity-bold-text'>" . esc_html($package_data->used) . "</span> / " . esc_html($package_data->packageLimit) . "</p>";
       echo '<p class="description">Shows the amount of articles used</p>';
     } else if ($cap_type === 'no_limit') {
       echo '<p>Unlimited</p>';

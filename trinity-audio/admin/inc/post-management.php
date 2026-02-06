@@ -5,6 +5,8 @@
 
   // Check if the form is submitted
   if (isset($_POST['action'])) {
+    trinity_check_post_nonce('trinity-audio-post-management');
+
     $action = $_POST['post-management-action'];
 
     $posts = [];
@@ -18,7 +20,7 @@
           'post_type'      => ['post'],
           'posts_per_page' => -1,
           'date_query'     => [[
-            $_POST['range-before-after'] => $_POST['range-date'],
+            $_POST['range-before-after'] => sanitize_text_field($_POST['range-date']),
           ]]
         ]
       );
@@ -41,7 +43,7 @@
         $success_message = str_replace('##DATE##', $_POST['range-date'], $success_message);
       }
 
-      echo "<div class='notice notice-success'><p>$success_message</p></div>";
+      echo "<div class='notice notice-success'><p>" . esc_html($success_message) . "</p></div>";
     }
 
     trinity_send_graphite_metric('wordpress.post-management.' . $action);
@@ -55,9 +57,10 @@
       <?php require_once __DIR__ . '/../inc/progress.php'; ?>
     </div>
 
-    <form action="<?php echo esc_url($_SERVER['REQUEST_URI']); ?>" method="post"
+    <form action="<?= esc_url($_SERVER['REQUEST_URI']); ?>" method="post"
           name="trinity_audio_post_management">
         <input type="hidden" name="action" value="trinity_audio_post_management">
+        <?php wp_nonce_field('trinity-audio-post-management', TRINITY_AUDIO_NONCE_NAME); ?>
 
         <div class="flex-grid">
             <div class="row">

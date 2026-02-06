@@ -21,6 +21,13 @@
     trinity_phbu_start(true);
   }
 
+  // we have a separate function which has nonce checking, since we also run trinity_phbu_start() it via cron which doesn't require nonce checking
+  function trinity_phbu_start_from_admin() {
+    check_ajax_referer('audio_bulk_update_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
+    trinity_phbu_start();
+  }
+
   /**
    * Manual triggering bulk update via pressing Save button (if skip HTML tags or shortcodes were changed)
    * or via init wp hook with is_continue flag as true
@@ -171,6 +178,8 @@
   }
 
   function trinity_phbu_get_status() {
+    check_ajax_referer('audio_bulk_update_status_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     header('Content-type: application/json');
 
     die(wp_json_encode(trinity_phbu_get_status_data()));

@@ -54,8 +54,9 @@ const $ = jQuery;
       type: 'GET',
       url: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_ADMIN_POST,
       data: {
-        action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_BULK_UPDATE
-      },
+        action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_BULK_UPDATE,
+        [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.audio_bulk_update
+      }
     });
 
     trinityUpdateBulkProgress({
@@ -77,7 +78,8 @@ const $ = jQuery;
       type: 'GET',
       url: ajaxurl,
       data: {
-        action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_BULK_UPDATE_STATUS
+        action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_BULK_UPDATE_STATUS,
+        [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.audio_bulk_update_status
       },
       dataType: 'json',
       success: function (bulkUpdateResponse) {
@@ -123,6 +125,7 @@ const $ = jQuery;
 
       const formData = Object.fromEntries(new FormData(e.target).entries());
       formData.action = window.TRINITY_WP_ADMIN.TRINITY_AUDIO_CONTACT_US;
+      formData[window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME] = window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.contact_us;
 
       $(submitButton).attr('disabled', true);
       trinityShowStatus(id, 'progress');
@@ -292,7 +295,8 @@ async function trinityAudioOnSettingsFormSubmit(form, isInitialSave) {
         fab,
         showSettings: Number(showSettings),
         shareEnabled: Number(shareEnabled),
-        audioVariantId: audioVariantId ? Number(audioVariantId) : ''
+        audioVariantId: audioVariantId ? Number(audioVariantId) : '',
+        [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.update_unit_config
       },
       complete() {
         form.submit();
@@ -339,7 +343,7 @@ function trinityAudioOnRegisterFormSubmit(e) {
       recover_installkey: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_RECOVER_INSTALLKEY).val(),
       publisher_token: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN).val(),
       email_subscription: Number(jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_EMAIL_SUBSCRIPTION)[0].checked),
-      _wpnonce: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_REGISTER_NONCE
+      [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.register
     },
     success: function (response) {
       if (response.code !== TRINITY_REGISTRATION_RESPONSE_CODE.SUCCESS) {
@@ -402,6 +406,7 @@ function trinityAudioOnPublisherTokenSubmit(e) {
     data: {
       action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN_URL,
       publisher_token: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN).val().trim(),
+      [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.assign_account_key
     },
     success: (response) => {
       if (response.code === TRINITY_REGISTRATION_RESPONSE_CODE.SUCCESS || response.code === TRINITY_REGISTRATION_RESPONSE_CODE.ALREADY_ASSIGNED_PUBLISHER_TOKEN) {
@@ -430,7 +435,8 @@ function trinitySendMetric(metric, additionalData) {
     data: {
       metric,
       additionalData,
-      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_SEND_METRIC
+      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_SEND_METRIC,
+      [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.send_metric
     }
   });
 }
@@ -442,7 +448,8 @@ function trinityRemovePostBanner() {
     type: 'POST',
     url: ajaxurl,
     data: {
-      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_REMOVE_POST_BANNER
+      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_REMOVE_POST_BANNER,
+      [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.remove_post_banner
     }
   });
 }
@@ -453,7 +460,8 @@ function trinityGrabPackageInfo(retryNumber) {
     url: ajaxurl,
     data: {
       retryNumber,
-      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PACKAGE_INFO
+      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PACKAGE_INFO,
+      [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.get_package_info
     }
   }).then((result) => {
     const el = document.querySelector('.trinity-section-body.plan-section');

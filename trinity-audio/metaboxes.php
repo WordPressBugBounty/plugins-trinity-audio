@@ -38,18 +38,18 @@
     $voice_config_widget_url = TRINITY_DASHBOARD_SERVICE . 'backend/v1/apps/unit-configuration/wp/' . trinity_get_install_key() . '?voice_selection_only=1&voice_id=' . $post_voice_id;
     ?>
 
-    <script defer src="<?= $voice_config_widget_url ?>"></script>
+    <script defer src="<?= esc_url($voice_config_widget_url) ?>"></script>
     <script>
         jQuery(document).ready(async () => {
           await trinityMetaVoiceConfig();
         });
     </script>
 
-    <input type='hidden' name="<?php echo esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
-         id="<?php echo esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
+    <input type='hidden' name="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
+         id="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
          class="trinity-audio-metaboxes-element" />
-    <input type='hidden' name="<?php echo esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
-         id="<?php echo esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
+    <input type='hidden' name="<?= esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
+         id="<?= esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
          class="trinity-audio-metaboxes-element" />
   <?php
   }
@@ -57,10 +57,7 @@
   function trinity_audio_box_content($post) {
     ?>
     <div id="trinity-metabox">
-      <?php
-        $nonce = wp_create_nonce('trinity-audio-metabox');
-        echo '<input type="hidden" name="' . esc_attr(TRINITY_AUDIO_NONCE_NAME) . '" value="' . esc_attr($nonce) . '" />';
-      ?>
+       <?php wp_nonce_field('trinity-audio-metabox', TRINITY_AUDIO_NONCE_NAME); ?>
 
       <div class="components-tab-panel__tabs">
         <button type="button" class="components-button is-active"
@@ -78,7 +75,7 @@
           <table class="form-table">
             <tr>
               <th>
-                <label for="<?php echo esc_attr(TRINITY_AUDIO_ENABLED); ?>">
+                <label for="<?= esc_attr(TRINITY_AUDIO_ENABLED); ?>">
                   Enable TTS (Trinity audio):
                 </label>
               </th>
@@ -93,7 +90,7 @@
             </tr>
             <tr>
               <th>
-                <label for="<?php echo esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>">Voice:</label>
+                <label for="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>">Voice:</label>
               </th>
               <td>
                 <?php trinity_meta_source_language($post->ID); ?>
@@ -104,7 +101,7 @@
 
         <div data-id="advanced" class="content">
           <p>Please use this section in case you are having issues
-            with the player on this post or if instructed by <?php echo TRINITY_AUDIO_SUPPORT_MESSAGE; ?></p>
+            with the player on this post or if instructed by <?= wp_kses_post(TRINITY_AUDIO_SUPPORT_MESSAGE); ?></p>
 
           <h4 title="Each token represents different text version created for this post">
             <span class="dashicons dashicons-info"></span>

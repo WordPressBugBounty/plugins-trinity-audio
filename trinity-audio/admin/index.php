@@ -62,7 +62,20 @@
         'TRINITY_AUDIO_SEND_METRIC'          => TRINITY_AUDIO_SEND_METRIC,
         'TRINITY_AUDIO_REMOVE_POST_BANNER'   => TRINITY_AUDIO_REMOVE_POST_BANNER,
         'TRINITY_AUDIO_PACKAGE_INFO'         => TRINITY_AUDIO_PACKAGE_INFO,
-        'TRINITY_AUDIO_REGISTER_NONCE'       => wp_create_nonce('trinity_audio_register_nonce')
+        'TRINITY_AUDIO_AJAX_NONCE_NAME'      => TRINITY_AUDIO_AJAX_NONCE_NAME,
+        'TRINITY_AUDIO_NONCES' => [
+              'register' => wp_create_nonce('register_action'),
+              'update_unit_config' => wp_create_nonce('update_unit_config_action'),
+              'assign_account_key' => wp_create_nonce('assign_account_key_action'),
+              'contact_us' => wp_create_nonce('contact_us_action'),
+              'regenerate_tokens' => wp_create_nonce('regenerate_tokens_action'),
+              'send_metric' => wp_create_nonce('send_metric_action'),
+              'remove_post_banner' => wp_create_nonce('remove_post_banner_action'),
+              'get_package_info' => wp_create_nonce('get_package_info_action'),
+
+              'audio_bulk_update' => wp_create_nonce('audio_bulk_update_action'),
+              'audio_bulk_update_status' => wp_create_nonce('audio_bulk_update_status_action'),
+        ]
       ]
     );
   }
@@ -83,7 +96,7 @@
   add_action('update_option', 'trinity_audio_enable_for_last_20_posts'); // updated_option will not work, since at that point trinity_get_is_first_changes_saved() will be 1
 
   // triggers by admin.js checkIfPostsBulkUpdateRequested only after cleaning shortcodes or skip HTML tags
-  add_action('admin_post_' . TRINITY_AUDIO_BULK_UPDATE, 'trinity_phbu_start');
+  add_action('admin_post_' . TRINITY_AUDIO_BULK_UPDATE, 'trinity_phbu_start_from_admin');
 
   register_deactivation_hook(__FILE__, 'trinity_audio_deactivation');
 
@@ -152,7 +165,7 @@
 
           foreach ($values as $label => $value) {
             $is_selected = $value == $is_filtered ? ' selected="selected"' : '';
-            echo "<option value='$value' $is_selected>$label</option>";
+            echo "<option value='" . esc_attr($value) . "'" . esc_attr($is_selected) . ">" . esc_html($label) . "</option>";
           }
         ?>
       </select>
@@ -266,10 +279,8 @@
   }
 
   function trinity_audio_ajax_register() {
-    if (!isset($_POST['_wpnonce']) || !check_ajax_referer('trinity_audio_register_nonce', '_wpnonce')) {
-        wp_send_json_error(array('message' => 'Nonce verification failed.'));
-        wp_die();
-    }
+    check_ajax_referer('register_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     trinity_register();
     wp_die();
   }

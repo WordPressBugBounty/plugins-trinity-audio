@@ -183,6 +183,8 @@
   }
 
   function trinity_ph_update_regenerate_tokens() {
+    check_ajax_referer('regenerate_tokens_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
+
     $post_id = sanitize_text_field(wp_unslash($_POST['post_id']));
 
     if (!trinity_ph_update([$post_id])) die(json_encode([], JSON_FORCE_OBJECT));
