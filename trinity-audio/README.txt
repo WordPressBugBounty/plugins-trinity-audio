@@ -4,7 +4,7 @@ Contributors : TrinityAudio
 Tags: Text to Audio, Text to Speech, Audio Player, TTS Player, Content to audio, Text to voice, Voiceover, Accessibility, Audio, Turn text into audio, audio narrator
 Requires at least: 5.2
 Requires PHP: 7.2
-Tested up to: 6.9
+Tested up to: 7.0
 Stable tag: trunk
 License: GPLv3 ONLY
 License URI : https://www.gnu.org/licenses/gpl-3.0.html
