@@ -34,24 +34,31 @@
   }
 
   function trinity_meta_source_language($post_id) {
-    $post_voice_id = get_post_meta($post_id, TRINITY_AUDIO_VOICE_ID, true);
-    $voice_config_widget_url = TRINITY_DASHBOARD_SERVICE . 'backend/v1/apps/unit-configuration/wp/' . trinity_get_install_key() . '?voice_selection_only=1&voice_id=' . $post_voice_id;
+    $post_locale = get_post_meta($post_id, TRINITY_AUDIO_SOURCE_LANGUAGE, true);
+    $locales     = trinity_get_locales();
+
+    // keep a saved locale selectable even if the list could not be fetched or no longer contains it
+    if ($post_locale && !in_array($post_locale, array_column($locales, 'locale'))) {
+      array_unshift($locales, ['locale' => $post_locale]);
+    }
     ?>
 
-    <script defer src="<?= esc_url($voice_config_widget_url) ?>"></script>
-    <script>
-        jQuery(document).ready(async () => {
-          await trinityMetaVoiceConfig();
-        });
-    </script>
-
-    <input type='hidden' name="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
-         id="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>"
-         class="trinity-audio-metaboxes-element" />
-    <input type='hidden' name="<?= esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
-         id="<?= esc_attr(TRINITY_AUDIO_VOICE_ID); ?>"
-         class="trinity-audio-metaboxes-element" />
+    <select name="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>" id="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>">
+      <option value="">Use default</option>
+      <?php foreach ($locales as $locale) { ?>
+        <option value="<?= esc_attr($locale['locale']); ?>" <?php selected($post_locale, $locale['locale']); ?>><?= esc_html(trinity_get_locale_label($locale)); ?></option>
+      <?php } ?>
+    </select>
   <?php
+  }
+
+  /**
+   * @param array $locale one entry of trinity_get_locales(), e.g. "English (United Kingdom)"; falls back to the code
+   */
+  function trinity_get_locale_label($locale) {
+    $language = empty($locale['localeLanguageName']) ? $locale['locale'] : $locale['localeLanguageName'];
+
+    return empty($locale['localeRegionName']) ? $language : "$language ({$locale['localeRegionName']})";
   }
 
   function trinity_audio_box_content($post) {
@@ -82,21 +89,19 @@
               <td>
                 <?php trinity_meta_tts_enabled($post->ID); ?>
               </td>
-              <td rowspan="3" class="trinity-meta-upgrade-banner">
-                <?php
-                  trinity_post_management_banner();
-                ?>
-              </td>
             </tr>
             <tr>
               <th>
-                <label for="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>">Voice:</label>
+                <label for="<?= esc_attr(TRINITY_AUDIO_SOURCE_LANGUAGE); ?>">Language:</label>
               </th>
               <td>
                 <?php trinity_meta_source_language($post->ID); ?>
               </td>
             </tr>
           </table>
+          <div class="trinity-meta-upgrade-banner">
+            <?php trinity_post_management_banner(); ?>
+          </div>
         </div>
 
         <div data-id="advanced" class="content">

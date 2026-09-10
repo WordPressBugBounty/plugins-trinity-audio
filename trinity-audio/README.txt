@@ -4,7 +4,7 @@ Contributors : TrinityAudio
 Tags: Text to Audio, Text to Speech, Audio Player, TTS Player, Content to audio, Text to voice, Voiceover, Accessibility, Audio, Turn text into audio, audio narrator
 Requires at least: 5.2
 Requires PHP: 7.2
-Tested up to: 7.0
+Tested up to: 7.1
 Stable tag: trunk
 License: GPLv3 ONLY
 License URI : https://www.gnu.org/licenses/gpl-3.0.html
@@ -172,6 +172,10 @@ Check your credit balance in the plugin dashboard. Players won't appear on new p
 7. Trusted by leading media publications and content creators.
 
 == Changelog ==
+
+= 5.27.0 =
+ *Release Date - Sep 9, 2026*
+ * Post level: the voice selector is replaced with a language dropdown
 
 = 5.26.0 =
  *Release Date - Jan 30, 2026*

@@ -43,7 +43,8 @@
   const TRINITY_AUDIO_PLUGIN_VERSION                = 'trinity_audio_plugin_version'; // array
   const TRINITY_AUDIO_PLUGIN_MIGRATION              = 'trinity_audio_plugin_migration'; // array
   const TRINITY_AUDIO_SOURCE_LANGUAGE               = 'trinity_audio_source_language';
-  const TRINITY_AUDIO_VOICE_ID                      = 'trinity_audio_voice_id';
+  const TRINITY_AUDIO_LOCALES_CACHE                 = 'trinity_audio_locales_cache'; // transient
+  const TRINITY_AUDIO_LOCALES_CACHE_TTL             = 12 * HOUR_IN_SECONDS; // the voice catalog changes rarely
   const TRINITY_AUDIO_SOURCE_NEW_POSTS_DEFAULT      = 'trinity_audio_defconf';
   const TRINITY_AUDIO_PLAYER_LABEL                  = 'trinity_audio_player_label';
   const TRINITY_AUDIO_POWERED_BY                    = 'trinity_audio_poweredby';
@@ -78,6 +79,7 @@
   const TRINITY_AUDIO_PUBLISHER_TOKEN_URL           = TRINITY_AUDIO_WP_SERVICE . '/assign-unit-to-publisher';
   const TRINITY_AUDIO_UPDATE_FULL_UNIT_CONFIG_URL   = TRINITY_AUDIO_WP_SERVICE . '/unit-config';
   const TRINITY_AUDIO_NOTIFICATIONS_URL             = TRINITY_AUDIO_WP_SERVICE . '/notification';
+  const TRINITY_AUDIO_LOCALES_URL                   = TRINITY_AUDIO_SERVICE . '/v2/locales';
 
   const TRINITY_AUDIO_ENABLED = 'trinity_audio_enable';
 

@@ -31,7 +31,6 @@
     delete_option(TRINITY_AUDIO_PHBU_FAILED_POSTS);
     delete_option(TRINITY_AUDIO_PHBU_BULK_UPDATE_DONE);
     delete_option(TRINITY_AUDIO_FIRST_CHANGES_SAVE);
-    delete_option(TRINITY_AUDIO_VOICE_ID);
     delete_option(TRINITY_AUDIO_MIGRATION_PROGRESS);
 
     trinity_update_details(TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL, 'deleted', false);

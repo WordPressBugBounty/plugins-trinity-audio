@@ -198,13 +198,10 @@
 
     $player_query_params = [
       'integrationType' => 'wordpress',
-      'postHashV2'  => $post_hash,
-      'language'    => $source_language,
-      'pageURL'     => get_permalink()
+      'postHashV2'      => $post_hash,
+      'articleLocale'   => $source_language,
+      'pageURL'         => get_permalink()
     ];
-
-    $post_voice_id = get_post_meta($post_id, TRINITY_AUDIO_VOICE_ID, true);
-    if ($post_voice_id) $player_query_params['voiceId'] = $post_voice_id;
 
     // do NOT include trinityAudioPlaceholder with PB when we already have in source code, because of using shortcodes, themes, etc... otherwise it will be flashing in wrong position
     if (!strstr($page_content, 'trinityAudioPlaceholder')) {
@@ -588,6 +585,23 @@
     if (!$result) die(esc_html($error_msg));
 
     return json_decode($result);
+  }
+
+  /**
+   * Locales that have at least one voice (voice v2), for the post-level language dropdown.
+   *
+   * @return array of ['locale' => 'en-GB', 'localeLanguage' => 'en', 'localeLanguageName' => 'English', 'localeRegion' => 'GB', 'localeRegionName' => 'United Kingdom']
+   */
+  function trinity_get_locales() {
+    $locales = get_transient(TRINITY_AUDIO_LOCALES_CACHE);
+    if ($locales) return $locales;
+
+    $locales = json_decode(trinity_curl_get(TRINITY_AUDIO_LOCALES_URL, '', false), true);
+    if (empty($locales)) return [];
+
+    set_transient(TRINITY_AUDIO_LOCALES_CACHE, $locales, TRINITY_AUDIO_LOCALES_CACHE_TTL);
+
+    return $locales;
   }
 
   function notifications($package_data) {

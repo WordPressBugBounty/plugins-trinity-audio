@@ -1,29 +1,3 @@
-async function trinityMetaVoiceConfig() {
-  // WP Save button will save our data since we already update the form, so the voice post-lvel new data will just be sent to backend
-  const updateForm = async (formData) => {
-    if (!originalConfig) return;
-    if (JSON.stringify(originalConfig) === JSON.stringify(formData)) return;
-
-    const {voiceId, code} = formData;
-
-    const voiceIdInputEl = document.getElementById('trinity_audio_voice_id');
-    voiceIdInputEl.value = voiceId; // set public voiceId
-
-    // Good to save locale and not only voiceId, since if voiceId get removed, we have locale which we can rely on
-    const languageInputEl = document.getElementById('trinity_audio_source_language');
-    languageInputEl.value = code;
-
-    console.debug(`Updating post-level voice config to voiceId: ${voiceId} and locale: ${code}`);
-  };
-
-  // keep the original config to avoid updating post-level config with the same data which is on unit's one, avoid spamming
-  let originalConfig;
-  waitForExpression(() => window.TRINITY_UNIT_CONFIGURATION?.getFormData).then(async () => {
-    originalConfig = await window.TRINITY_UNIT_CONFIGURATION.getFormData();
-    window.TRINITY_UNIT_CONFIGURATION.on('change', updateForm);
-  });
-}
-
 function trinitySendMetricMeta(metric, additionalData) {
   $.ajax({
     type: 'POST',
@@ -34,17 +8,6 @@ function trinitySendMetricMeta(metric, additionalData) {
       action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_SEND_METRIC,
       [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.send_metric
     }
-  });
-}
-
-function waitForExpression(expressionFn) {
-  return new Promise((resolve) => {
-    const t = setInterval(() => {
-      if (!!expressionFn()) {
-        resolve();
-        clearInterval(t);
-      }
-    }, 1000);
   });
 }
 

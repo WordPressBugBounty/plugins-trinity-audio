@@ -233,11 +233,10 @@
     if (isset($_POST[TRINITY_AUDIO_NONCE_NAME]) && wp_verify_nonce($_POST[TRINITY_AUDIO_NONCE_NAME], 'trinity-audio-metabox')) {
       trinity_audio_enable_player_for_post_id($post_id, $is_enable);
 
-      // Update post source language
-      update_post_meta($post_id, TRINITY_AUDIO_SOURCE_LANGUAGE, sanitize_text_field($_POST[TRINITY_AUDIO_SOURCE_LANGUAGE]));
-
-      // Update post voice id
-      update_post_meta($post_id, TRINITY_AUDIO_VOICE_ID, sanitize_text_field($_POST[TRINITY_AUDIO_VOICE_ID]));
+      // Update post locale (empty means the unit default)
+      if (isset($_POST[TRINITY_AUDIO_SOURCE_LANGUAGE])) {
+        update_post_meta($post_id, TRINITY_AUDIO_SOURCE_LANGUAGE, sanitize_text_field($_POST[TRINITY_AUDIO_SOURCE_LANGUAGE]));
+      }
     }
 
     trinity_ph_update([$post_id]);

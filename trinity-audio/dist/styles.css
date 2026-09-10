@@ -655,8 +655,16 @@
   transition: all 200ms ease-out;
 }
 
+#trinity-metabox .components-tab-panel__tab-content .content[data-id=main].is-active {
+  display: flex;
+  align-items: flex-start;
+}
+#trinity-metabox .form-table th {
+  vertical-align: middle;
+}
 #trinity-metabox .trinity-meta-upgrade-banner {
   position: relative;
+  flex-shrink: 0;
   width: 380px;
   padding: 10px 10px 0 10px;
 }
