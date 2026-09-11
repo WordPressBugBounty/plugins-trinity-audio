@@ -30,9 +30,7 @@
 
     $value = $action === 'deactivate-all-posts' ? 0 : 1;
 
-    foreach ($posts as $post_id) {
-      update_post_meta($post_id, TRINITY_AUDIO_ENABLED, $value);
-    }
+    trinity_audio_enable_player_for_post_ids($posts, $value);
 
     if ($posts_num === 0) {
       echo "<div class='notice notice-warning'><p>No posts were affected</p></div>";

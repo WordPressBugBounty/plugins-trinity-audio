@@ -2,7 +2,7 @@
 
 Contributors : TrinityAudio
 Tags: Text to Audio, Text to Speech, Audio Player, TTS Player, Content to audio, Text to voice, Voiceover, Accessibility, Audio, Turn text into audio, audio narrator
-Requires at least: 5.2
+Requires at least: 6.0
 Requires PHP: 7.2
 Tested up to: 7.1
 Stable tag: trunk
@@ -172,6 +172,11 @@ Check your credit balance in the plugin dashboard. Players won't appear on new p
 7. Trusted by leading media publications and content creators.
 
 == Changelog ==
+
+= 5.27.1 =
+ *Release Date - Sep 11, 2026*
+ * Fixed "Enable/Disable on all posts" failing with a fatal error on sites with tens of thousands of posts
+ * Minimum WordPress version is now 6.0
 
 = 5.27.0 =
  *Release Date - Sep 9, 2026*
