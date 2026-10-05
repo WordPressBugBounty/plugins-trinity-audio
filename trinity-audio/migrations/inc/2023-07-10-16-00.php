@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   if (!trinity_should_migrate_for('5.6.2')) return;
 
   delete_option('trinity_player_position');

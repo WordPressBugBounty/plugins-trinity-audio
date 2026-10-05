@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/inc/logs.php';
   require_once __DIR__ . '/inc/constants.php';
 
@@ -90,5 +91,5 @@
   }
 
   function trinity_is_dev_env() {
-    return TRINITY_AUDIO_SERVICE !== 'https://audio.trinityaudio.ai';
+    return TRINITY_AUDIO_INTEGRATION_API !== TRINITY_AUDIO_INTEGRATION_API_URL;
   }

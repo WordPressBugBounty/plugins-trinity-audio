@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   function trinity_init_checks_get_ini() {
     $min_required_params = [
       'memory_limit'        => '256M',
@@ -58,7 +59,7 @@
   }
 
   function trinity_init_checks_get_DNS_info() {
-    $result = dns_get_record(TRINITY_AUDIO_SERVICE_HOST);
+    $result = dns_get_record(TRINITY_AUDIO_INTEGRATION_API_HOST);
     $output = [];
 
     foreach ($result as $record) {

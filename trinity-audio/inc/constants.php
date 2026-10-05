@@ -1,7 +1,10 @@
 <?php
-  const TRINITY_AUDIO_SERVICE_HOST = 'audio.trinityaudio.ai';
+  if (!defined('ABSPATH')) exit;
+  const TRINITY_AUDIO_INTEGRATION_API_HOST = 'api.trinityaudio.ai';
+  const TRINITY_AUDIO_INTEGRATION_API_URL  = 'https://' . TRINITY_AUDIO_INTEGRATION_API_HOST . '/integration';
 
-  define('TRINITY_AUDIO_SERVICE', empty(getenv('PLUGIN_AUDIO_SERVICE_URL')) ? 'https://' . TRINITY_AUDIO_SERVICE_HOST : getenv('PLUGIN_AUDIO_SERVICE_URL'));
+  // Trinity's Integration API, which the plugin's calls go to (the e2e and dev stacks point it at their own).
+  define('TRINITY_AUDIO_INTEGRATION_API', empty(getenv('PLUGIN_INTEGRATION_API_URL')) ? TRINITY_AUDIO_INTEGRATION_API_URL : getenv('PLUGIN_INTEGRATION_API_URL'));
 
   define('TRINITY_AUDIO_STARTUP', empty(getenv('PLUGIN_TTS_PLAYER_URL')) ? 'https://trinitymedia.ai/player/trinity/' : getenv('PLUGIN_TTS_PLAYER_URL')); // v4.1.(4,5,6) works with trinity/_/?viewkey...
 
@@ -66,20 +69,25 @@
   const TRINITY_AUDIO_PACKAGE_INFO                  = 'trinity_audio_package_info';
   const TRINITY_AUDIO_ACTIVATE_ON_API_POST_CREATION = 'trinity_audio_activate_on_api_post_creation';
 
-  const TRINITY_AUDIO_WP_SERVICE                    = TRINITY_AUDIO_SERVICE . '/wordpress';
-  const TRINITY_AUDIO_BULK_UPDATE_URL               = TRINITY_AUDIO_WP_SERVICE . '/bulk_update';
-  const TRINITY_AUDIO_POST_HASH_URL_V2              = TRINITY_AUDIO_WP_SERVICE . '/v2/posthash';
-  const TRINITY_AUDIO_UPDATE_PLUGIN_CONFIG_URL      = TRINITY_AUDIO_WP_SERVICE . '/config';
-  const TRINITY_AUDIO_METRICS_URL                   = TRINITY_AUDIO_WP_SERVICE . '/metrics';
+  const TRINITY_AUDIO_ASSIGN_ACCOUNT_KEY            = 'trinity_audio_assign_account_key';
 
-  const TRINITY_AUDIO_CREDITS_URL                   = TRINITY_AUDIO_WP_SERVICE . '/credits';
-  const TRINITY_AUDIO_KEYS_URL                      = TRINITY_AUDIO_WP_SERVICE . '/signup';
-  const TRINITY_AUDIO_CONTACT_US_URL                = TRINITY_AUDIO_WP_SERVICE . '/contact-us';
-  const TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL     = TRINITY_AUDIO_WP_SERVICE . '/update_plugin_details';
-  const TRINITY_AUDIO_PUBLISHER_TOKEN_URL           = TRINITY_AUDIO_WP_SERVICE . '/assign-unit-to-publisher';
-  const TRINITY_AUDIO_UPDATE_FULL_UNIT_CONFIG_URL   = TRINITY_AUDIO_WP_SERVICE . '/unit-config';
-  const TRINITY_AUDIO_NOTIFICATIONS_URL             = TRINITY_AUDIO_WP_SERVICE . '/notification';
-  const TRINITY_AUDIO_LOCALES_URL                   = TRINITY_AUDIO_SERVICE . '/v2/locales';
+  // Integration API paths; the site's own ones are under /v1/wordpress/unit/{installkey}.
+  const TRINITY_AUDIO_UNIT_PATH                     = '/v1/wordpress/unit';
+  const TRINITY_AUDIO_METRICS_PATH                  = '/v1/wordpress/metrics';
+  const TRINITY_AUDIO_NOTIFICATION_PATH             = '/v1/wordpress/notification';
+  const TRINITY_AUDIO_LOCALES_PATH                  = '/v2/locale';
+
+  // Integration API's error codes as the plugin's own (send_response shows each); any other is 'ERROR'.
+  const TRINITY_AUDIO_SIGNUP_CODES = [
+    'DOMAIN_ALREADY_REGISTERED' => 'ALREADY_REGISTERED',
+    'INSTALL_KEY_MISMATCH'      => 'WRONG_INSTALLKEY',
+    'ACCOUNT_KEY_NOT_FOUND'     => 'WRONG_PUBLISHER_TOKEN'
+  ];
+  const TRINITY_AUDIO_ASSIGN_CODES = [
+    'ACCOUNT_KEY_NOT_FOUND' => 'WRONG_PUBLISHER_TOKEN',
+    'ALREADY_ASSIGNED'      => 'ALREADY_ASSIGNED_PUBLISHER_TOKEN',
+    'UNIT_NOT_FOUND'        => 'WRONG_INSTALLKEY'
+  ];
 
   const TRINITY_AUDIO_ENABLED = 'trinity_audio_enable';
 

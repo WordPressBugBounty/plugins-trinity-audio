@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/../../utils.php';
   require_once __DIR__ . '/../../inc/common.php';
   require_once __DIR__ . '/../../inc/constants.php';
@@ -33,7 +34,7 @@
     <div class="flex-grid">
       <div class="column column-left">
         <section>
-          <?php if ($package_data->package->package_name !== 'Premium') { ?>
+          <?php if ($package_data->package->package_name === 'Free') { ?>
           <div class="section-title row lock-description">
             <span>General Configuration</span>
             <span class="upgrade-description">
@@ -152,7 +153,7 @@
 
         <section class="save-and-odds">
           <div class="save-and-odds-positioning">
-            <?php trinity_premium_banner(); ?>
+            <?php if ($package_data->package->package_name === 'Free') trinity_premium_banner(); ?>
             <button class="save-button">Save Changes</button>
           </div>
         </section>

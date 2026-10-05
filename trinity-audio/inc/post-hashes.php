@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   /**
    * Post hashes update functionality.
    *
@@ -130,23 +131,17 @@
       'pluginVersion' => $env_details['plugin_version']
     ];
 
-    $response = trinity_curl_post(
-      [
-        'post_data'       => gzencode(json_encode($post_data)), // compress with gzip, for 2k of posts - 450kb => 225kb
-        'url'             => TRINITY_AUDIO_POST_HASH_URL_V2,
-        'error_message'   => "Can't get hashes from server",
-        'die'             => false,
-        'throw_exception' => false,
-        'http_args'       => [
-          'headers' => [
-            'Content-Encoding' => 'gzip',
-            'Content-Type'     => 'application/json'
-          ]
-        ]
+    $result   = trinity_api_request([
+      'method'  => 'POST',
+      'path'    => trinity_unit_path('/post-hashes'),
+      'body'    => gzencode(json_encode($post_data)), // compress with gzip, for 2k of posts - 450kb => 225kb
+      'headers' => [
+        'Content-Encoding' => 'gzip'
       ]
-    );
+    ]);
+    $response = trinity_api_is_ok($result) ? $result['body'] : null;
 
-    if (!$response) return trinity_ph_update_requesting_hashes_report_error('Can\'t POST to ' . TRINITY_AUDIO_POST_HASH_URL_V2, $post_data);
+    if (!$response) return trinity_ph_update_requesting_hashes_report_error('Can\'t POST to ' . trinity_unit_path('/post-hashes'), $post_data);
     if (isset($response['isStop']) && $is_bulk) return -1;
     if (!isset($response['hashes'])) return trinity_ph_update_requesting_hashes_report_error('Did not get hashes back!', $post_data);
 

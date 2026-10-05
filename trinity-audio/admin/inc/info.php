@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/../../initial_checking.php';
 
   // save content into variable.
@@ -6,21 +7,35 @@
   require_once __DIR__ . '/info-content.php';
   $contents = ob_get_clean();
 
-  // show content.
-  echo wp_kses_post($contents);
+  // show content. The post rules strip <input>, and the subscription box has the account key one.
+  $allowed_html          = wp_kses_allowed_html('post');
+  $allowed_html['input'] = [
+    'type'        => true,
+    'class'       => true,
+    'id'          => true,
+    'name'        => true,
+    'value'       => true,
+    'placeholder' => true,
+    'spellcheck'  => true,
+    'disabled'    => true
+  ];
+  echo wp_kses($contents, $allowed_html);
 
   // write that content into file.
   trinity_log_to_file($contents, TRINITY_AUDIO_INFO_HTML, 'w');
 
   function trinity_info_show_credits() {
     $error_msg = trinity_can_not_connect_error_message('Can\'t get available credits.');
-    $result    = trinity_curl_get(TRINITY_AUDIO_CREDITS_URL . '?installkey=' . trinity_get_install_key(), $error_msg, false);
-    if (!$result) {
+    $result    = trinity_api_request([
+      'method' => 'GET',
+      'path'   => trinity_unit_path('/credits')
+    ]);
+    if (!trinity_api_is_ok($result)) {
       echo esc_html($error_msg);
       return;
     }
 
-    $credits_data = json_decode($result);
+    $credits_data = trinity_credits_to_package_data($result['body']);
     $cap_type = $credits_data->capType;
 
     if ($cap_type === 'chars') {

@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once ABSPATH . 'wp-admin/includes/plugin.php';
   require_once __DIR__ . '/../inc/templates.php';
   require_once __DIR__ . '/../metaboxes.php';
@@ -49,7 +50,7 @@
         'TRINITY_AUDIO_CONTACT_US'           => TRINITY_AUDIO_CONTACT_US,
         'TRINITY_AUDIO_INSTALLKEY'           => TRINITY_AUDIO_INSTALLKEY,
         'TRINITY_AUDIO_PUBLISHER_TOKEN'      => TRINITY_AUDIO_PUBLISHER_TOKEN,
-        'TRINITY_AUDIO_PUBLISHER_TOKEN_URL'  => TRINITY_AUDIO_PUBLISHER_TOKEN_URL,
+        'TRINITY_AUDIO_ASSIGN_ACCOUNT_KEY'   => TRINITY_AUDIO_ASSIGN_ACCOUNT_KEY,
         'TRINITY_AUDIO_REGENERATE_TOKENS'    => TRINITY_AUDIO_REGENERATE_TOKENS,
         'TRINITY_AUDIO_REGISTER'             => TRINITY_AUDIO_REGISTER,
         'TRINITY_AUDIO_RECOVER_INSTALLKEY'   => TRINITY_AUDIO_RECOVER_INSTALLKEY,
@@ -88,7 +89,7 @@
   add_action('wp_ajax_' . TRINITY_AUDIO_BULK_UPDATE_STATUS, 'trinity_phbu_get_status');
   add_action('wp_ajax_' . TRINITY_AUDIO_CONTACT_US, 'trinity_audio_ajax_contact_us');
   add_action('wp_ajax_' . TRINITY_AUDIO_REGISTER, 'trinity_audio_ajax_register');
-  add_action('wp_ajax_' . TRINITY_AUDIO_PUBLISHER_TOKEN_URL, 'trinity_save_publisher_token');
+  add_action('wp_ajax_' . TRINITY_AUDIO_ASSIGN_ACCOUNT_KEY, 'trinity_save_publisher_token');
   add_action('wp_ajax_' . TRINITY_AUDIO_UPDATE_UNIT_CONFIG, 'trinity_audio_ajax_update_unit_config');
   add_action('wp_ajax_' . TRINITY_AUDIO_SEND_METRIC, 'trinity_send_stat_metrics');
   add_action('wp_ajax_' . TRINITY_AUDIO_REMOVE_POST_BANNER, 'trinity_audio_ajax_remove_post_banner');
@@ -101,11 +102,11 @@
   register_deactivation_hook(__FILE__, 'trinity_audio_deactivation');
 
   function trinity_audio_activation() {
-    trinity_update_details(TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL, 'activated', false);
+    trinity_update_details('activated');
   }
 
   function trinity_audio_deactivation() {
-    trinity_update_details(TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL, 'deactivated', false);
+    trinity_update_details('deactivated');
   }
 
   trinity_init_default_settings();

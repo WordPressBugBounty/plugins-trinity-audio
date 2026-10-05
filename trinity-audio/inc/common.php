@@ -1,78 +1,81 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once ABSPATH . 'wp-admin/includes/plugin.php'; // for get_plugin_data()
   require_once __DIR__ . '/constants.php';
 
-  function trinity_curl_get($url, $error_message = '', $die = true, $async = false, $http_args = []) {
-    $start = microtime(true);
-
-    $args = [
-      'timeout'     => $async ? 0.01 : TRINITY_AUDIO_MAX_HTTP_REQ_TIMEOUT,
-      'blocking'    => !$async,
+  /**
+   * A JSON call to Trinity's Integration API. A status other than 2xx is logged; the caller maps it.
+   *
+   * @param array $options
+   *   - method: string, the HTTP method
+   *   - path: string, under TRINITY_AUDIO_INTEGRATION_API, e.g. '/v1/wordpress/unit'
+   *   - body: array|string, optional. An array is sent as JSON without its null values (the form encoding Sergio
+   *     got left them out too); a string is sent as it is
+   *   - headers: array, optional, extra request headers
+   * @return array|null ['status' => HTTP status, 'body' => the decoded answer], null when it could not be reached
+   */
+  function trinity_api_request(array $options) {
+    $start   = microtime(true);
+    $method  = $options['method'];
+    $url     = TRINITY_AUDIO_INTEGRATION_API . $options['path'];
+    $body    = $options['body'] ?? null;
+    $headers = $options['headers'] ?? [];
+    $args    = [
+      'method'      => $method,
+      'timeout'     => TRINITY_AUDIO_MAX_HTTP_REQ_TIMEOUT,
       'httpversion' => '1.1',
       'sslverify'   => false,
+      'headers'     => array_merge(['Content-Type' => 'application/json'], $headers)
     ];
+    if (is_array($body)) $body = wp_json_encode(array_filter($body, function ($value) {
+      return $value !== null;
+    }));
+    if ($body !== null) $args['body'] = $body;
 
-    $args = array_merge($args, $http_args);
-
-    $response = wp_remote_get($url, $args);
+    $response = wp_remote_request($url, $args);
 
     trinity_report_long_requests($start, $url);
 
-    if ($async) {
-      return;
+    if (is_wp_error($response)) {
+      trinity_log("Can't reach $method $url", $response->get_error_message(), '', TRINITY_AUDIO_ERROR_TYPES::error);
+      return null;
     }
-    trinity_handle_error($response, $url, '', $error_message, $die);
 
-    return wp_remote_retrieve_body($response);
+    $status        = wp_remote_retrieve_response_code($response);
+    $response_body = wp_remote_retrieve_body($response);
+    if (!trinity_api_is_status_ok($status)) trinity_log("$method $url answered $status", $response_body, '', TRINITY_AUDIO_ERROR_TYPES::warn);
+
+    return [
+      'status' => $status,
+      'body'   => json_decode($response_body, true)
+    ];
+  }
+
+  function trinity_api_is_status_ok($status) {
+    return $status >= 200 && $status < 300;
+  }
+
+  function trinity_api_is_ok($result) {
+    return $result !== null && trinity_api_is_status_ok($result['status']);
   }
 
   /**
-   * function used to make post request, handle `long requests`
-   * params description:
-   * string error_message
-   * boolean async - mode doesn't return anything
-   * boolean die - enable die function if request failed
-   * array http_args
-   * boolean throw_exception - if `die` is false and there is request error throw exception *
+   * The answer as the plugin's own `code` (what send_response shows), the way Sergio mapped Integration API's.
    *
-   * @param array $options options should contain 'post_data' and 'url' params, other parameters error_message, die, async, http_args, throw_exception are optional
-   * @return object|void
-   * @throws Exception
+   * @param array|null $result trinity_api_request's
+   * @param array $codes the flow's Integration API error code => plugin code
+   * @return string
    */
-  function trinity_curl_post(array $options) {
-    $start           = microtime(true);
-    $post_data       = $options['post_data'];
-    $url             = $options['url'];
-    $error_message   = isset($options['error_message']) ? $options['error_message'] : '';
-    $die             = isset($options['die']) ? $options['die'] : true;
-    $async           = isset($options['async']) ? $options['async'] : false;
-    $http_args       = isset($options['http_args']) ? $options['http_args'] : [];
-    $throw_exception = isset($options['throw_exception']) ? $options['throw_exception'] : false;
+  function trinity_api_code($result, $codes) {
+    if ($result === null || $result['status'] >= 500) return 'ERROR_NETWORK';
+    if (trinity_api_is_status_ok($result['status'])) return 'SUCCESS';
 
-    $args = [
-      'body'        => $post_data,
-      'timeout'     => $async ? 0.01 : TRINITY_AUDIO_MAX_HTTP_REQ_TIMEOUT,
-      'blocking'    => !$async,
-      'httpversion' => '1.1',
-      'sslverify'   => false
-    ];
+    return $codes[$result['body']['code'] ?? ''] ?? 'ERROR';
+  }
 
-    $args = array_merge($args, $http_args);
-
-    $response = wp_remote_post($url, $args);
-
-    trinity_report_long_requests($start, $url);
-
-    if ($async) {
-      return;
-    }
-    $ok = trinity_handle_error($response, $url, $post_data, $error_message, $die);
-    if (!$ok && $throw_exception && !$die) {
-      throw new Exception('Request failed');
-    }
-
-    $body = wp_remote_retrieve_body($response);
-    return json_decode($body, true);
+  /** The site's unit on Integration API, by its install key: `/v1/wordpress/unit/{installkey}{suffix}`. */
+  function trinity_unit_path($suffix = '') {
+    return TRINITY_AUDIO_UNIT_PATH . '/' . rawurlencode(trinity_get_install_key()) . $suffix;
   }
 
   function trinity_is_user_admin() {
@@ -246,70 +249,49 @@
   function trinity_save_publisher_token() {
     check_ajax_referer('assign_account_key_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
 
-    $data = trinity_get_env_details();
+    if (!trinity_get_install_key()) send_response('WRONG_INSTALLKEY');
+    if (empty($_POST['publisher_token'])) send_response('WRONG_PUBLISHER_TOKEN');
 
-    $postData = [
-      'installkey'      => trinity_get_install_key(),
-      'publisher_token' => $_POST['publisher_token'],
-      'top_domain'      => $data['site_domain']
-    ];
-
-    $response = trinity_curl_post(
-      [
-        'post_data' => $postData,
-        'url'       => TRINITY_AUDIO_PUBLISHER_TOKEN_URL
+    $result = trinity_api_request([
+      'method' => 'PUT',
+      'path'   => trinity_unit_path('/publisher'),
+      'body'   => [
+        'accountKey' => $_POST['publisher_token']
       ]
-    );
+    ]);
+    $code   = trinity_api_code($result, TRINITY_AUDIO_ASSIGN_CODES);
 
-    if (!$response) send_response('ERROR_NETWORK');
-
-    if ($response['code'] === 'SUCCESS' || $response['code'] === 'ALREADY_ASSIGNED_PUBLISHER_TOKEN') {
+    if ($code === 'SUCCESS' || $code === 'ALREADY_ASSIGNED_PUBLISHER_TOKEN') {
       trinity_set_is_account_key_linked();
     }
 
-    send_response($response['code']);
+    send_response($code);
   }
 
   function trinity_audio_ajax_contact_us() {
     check_ajax_referer('contact_us_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
 
-    header('Content-type: application/json');
-
     $is_include_log = isset($_POST['include_log']);
 
-    $data = trinity_get_env_details();
+    $request = [
+      'name'    => sanitize_text_field($_POST['name'] ?? ''),
+      'email'   => sanitize_text_field($_POST['email'] ?? ''),
+      'message' => sanitize_text_field($_POST['message'] ?? ''),
+      'website' => sanitize_text_field($_POST['website'] ?? '')
+    ];
+    // the plugin's log and info page go along when the owner chose to include them
+    if ($is_include_log && file_exists(TRINITY_AUDIO_LOG)) $request['logFile'] = base64_encode(file_get_contents(TRINITY_AUDIO_LOG));
+    if ($is_include_log && file_exists(TRINITY_AUDIO_INFO_HTML)) $request['infoFile'] = base64_encode(file_get_contents(TRINITY_AUDIO_INFO_HTML));
 
-    /*
-      The code below uses cURL because we need to send 2 files and some data
-      along with them as multipart/form-data for which there is not an option
-      with wp_remote_post. The use-case of cURL in the plugin here was discussed
-      with and approved by the WordPress Plugin Review Team in an email
-    */
-    if ($is_include_log && file_exists(TRINITY_AUDIO_LOG)) {
-      $data['log'] = curl_file_create(TRINITY_AUDIO_LOG);
-    }
-    if ($is_include_log && file_exists(TRINITY_AUDIO_INFO_HTML)) {
-      $data['info'] = curl_file_create(TRINITY_AUDIO_INFO_HTML);
-    }
+    $result = trinity_api_request([
+      'method' => 'POST',
+      'path'   => trinity_unit_path('/contact-us'),
+      'body'   => $request
+    ]);
 
-    $postData = array_merge($data, array_map('sanitize_text_field', $_POST));
-    $ch = curl_init(TRINITY_AUDIO_CONTACT_US_URL);
+    if (!trinity_api_is_ok($result)) wp_send_json(['error' => "Can't send the request"], 500);
 
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: multipart/form-data']);
-
-    $response     = curl_exec($ch);
-    $responseData = json_decode($response);
-
-    if (!isset($responseData->ok) || $ch === false) {
-      http_response_code(500);
-      echo esc_html('Error Code: ' . curl_getinfo($ch, CURLINFO_HTTP_CODE));
-      echo esc_html('Error Body: ' . curl_error($ch));
-    }
-
-    wp_send_json($responseData);
+    wp_send_json(['ok' => true]);
   }
 
   function trinity_get_posts($offset = 0, $size = -1): array {
@@ -383,83 +365,85 @@
     ];
   }
 
-  function trinity_update_details($url, $event_type = '', $die = true) {
+  // The site's details on its unit. Before the first signup there is no unit yet (Sergio answered `{}` for that).
+  function trinity_update_details($event_type) {
+    if (!trinity_get_install_key()) return;
+
     $data = trinity_get_env_details();
-    if ($event_type) {
-      $data['details_event_type'] = $event_type;
-    }
 
-    if ($event_type = 'activating' && empty($data['installkey']) && !empty($_POST['recover_installkey'])) {
-      $data['installkey'] = $_POST['recover_installkey'];
-    }
-
-    if (!empty($_POST['publisher_token'])) $data['publisher_token'] = $_POST['publisher_token'];
-    if (!empty($_POST['email_subscription'])) $data['email_subscription'] = $_POST['email_subscription'];
-
-    return trinity_curl_post(
-      [
-        'post_data'     => $data,
-        'url'           => $url,
-        'error_message' => trinity_can_not_connect_error_message('Can\'t update plugin details.'),
-        'die'           => $die
+    trinity_api_request([
+      'method' => 'PATCH',
+      'path'   => trinity_unit_path(),
+      'body'   => [
+        'pluginVersion'    => $data['plugin_version'],
+        'phpVersion'       => $data['php_version'],
+        'wpVersion'        => $data['wp_version'],
+        'allPlugins'       => $data['all_plugins'],
+        'email'            => $data['email'],
+        'detailsEventType' => $event_type
       ]
-    );
+    ]);
   }
 
   function trinity_audio_ajax_update_unit_config() {
     check_ajax_referer('update_unit_config_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
 
-    $data = [
-      'installkey'   => trinity_get_install_key(),
-      'speed'        => $_GET['speed'],
-      'language'     => $_GET['language'],
-      'voiceStyle'   => $_GET['voiceStyle'],
-      'themeId'      => $_GET['themeId'],
-      'voice'        => $_GET['voice'],
-      'fab'          => $_GET['fab'],
-      'powered_by'   => $_GET['poweredBy'],
-      'showSettings' => $_GET['showSettings'],
-      'shareEnabled' => $_GET['shareEnabled'],
-      'audioVariantId' => $_GET['audioVariantId']
-    ];
-
-    trinity_curl_post(
-      [
-        'post_data'     => $data,
-        'url'           => TRINITY_AUDIO_UPDATE_FULL_UNIT_CONFIG_URL,
-        'error_message' => trinity_can_not_connect_error_message('Can\'t update plugin details.'),
-        'die'           => false
+    trinity_api_request([
+      'method' => 'PATCH',
+      'path'   => trinity_unit_path(),
+      'body'   => [
+        'language'       => $_GET['language'] ?? null,
+        'voice'          => $_GET['voice'] ?? null,
+        'voiceStyle'     => $_GET['voiceStyle'] ?? null,
+        'fab'            => $_GET['fab'] ?? null,
+        'playbackRate'   => trinity_api_number($_GET['speed'] ?? null),
+        'themeId'        => trinity_api_number($_GET['themeId'] ?? null),
+        'audioVariantId' => trinity_api_number($_GET['audioVariantId'] ?? null),
+        'showPoweredBy'  => trinity_api_flag($_GET['poweredBy'] ?? null),
+        'showSettings'   => trinity_api_flag($_GET['showSettings'] ?? null),
+        'shareEnabled'   => trinity_api_flag($_GET['shareEnabled'] ?? null)
       ]
-    );
+    ]);
+  }
+
+  /**
+   * A settings number (speed, theme or audio variant id) as a number. An empty one ('' or '0') is left out, as Sergio did.
+   *
+   * @param string|null $value
+   * @return int|float|null null leaves the setting out of the request
+   */
+  function trinity_api_number($value) {
+    if (empty($value)) return null;
+
+    return $value + 0;
+  }
+
+  /**
+   * A settings switch, '1' or '0', as a boolean.
+   *
+   * @param string|null $value
+   * @return bool|null null (the switch was not sent) leaves the setting out of the request
+   */
+  function trinity_api_flag($value) {
+    if ($value === null) return null;
+
+    return (bool)(int)$value;
   }
 
   function trinity_send_graphite_metric($metric) {
-    return trinity_curl_post(
-      [
-        'post_data' => [
-          'metric' => $metric
-        ],
-        'url'       => TRINITY_AUDIO_METRICS_URL,
-        'die'       => false
+    trinity_api_request([
+      'method' => 'POST',
+      'path'   => TRINITY_AUDIO_METRICS_PATH,
+      'body'   => [
+        'metric' => $metric
       ]
-    );
+    ]);
   }
 
   function trinity_send_stat_metrics() {
     check_ajax_referer('send_metric_action', TRINITY_AUDIO_AJAX_NONCE_NAME);
 
-    $data = [
-      'metric'         => $_POST['metric'],
-      'additionalData' => $_POST['additionalData'] ?? null
-    ];
-
-    return trinity_curl_post(
-      [
-        'post_data' => $data,
-        'url'       => TRINITY_AUDIO_METRICS_URL,
-        'die'       => false
-      ]
-    );
+    trinity_send_graphite_metric($_POST['metric']);
   }
 
   function trinity_audio_ajax_remove_post_banner() {
@@ -494,18 +478,12 @@
       ]));
   }
 
-  function handle_register_response($response) {
-    $response_code = 'ERROR_NETWORK'; // if there is a `response`, $response_code should be overridden
-
-    if (!$response) {
-      send_response($response_code);
-    }
-
-    $response_code = $response['code'];
+  function handle_register_response($result) {
+    $response_code = trinity_api_code($result, TRINITY_AUDIO_SIGNUP_CODES);
 
     if ($response_code === 'SUCCESS') {
-      $response_install_key = $response['data']['installkey'];
-      $response_view_key    = $response['data']['viewkey'];
+      $response_install_key = $result['body']['unit']['installKey'] ?? null;
+      $response_view_key    = $result['body']['unit']['viewKey'] ?? null;
 
       /*
       Check if response exists, so we don't override with empty values if smth went wrong.
@@ -519,8 +497,6 @@
       }
 
       set_transient(TRINITY_AUDIO_FIRST_TIME_INSTALL, true, 60);
-
-      send_response($response_code);
     }
 
     send_response($response_code);
@@ -531,13 +507,37 @@
     $view_key    = trinity_get_view_key();
 
     if ($install_key && $view_key) {
-      trinity_update_details(TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL, 'reactivating', false);
+      trinity_update_details('reactivating');
       return true;
     }
 
-    $response = trinity_update_details(TRINITY_AUDIO_KEYS_URL, 'activating', false);
+    handle_register_response(trinity_register_unit($install_key));
+  }
 
-    handle_register_response($response);
+  /*
+   * The signup: Integration API registers the site, or answers both keys again for the install key a site kept
+   * (recovery: the one it still has, or the one the owner typed in).
+   */
+  function trinity_register_unit($install_key) {
+    $data = trinity_get_env_details();
+    if (!$install_key && !empty($_POST['recover_installkey'])) $install_key = $_POST['recover_installkey'];
+
+    return trinity_api_request([
+      'method' => 'POST',
+      'path'   => TRINITY_AUDIO_UNIT_PATH,
+      'body'   => [
+        'siteDomain'        => $data['site_domain'],
+        'email'             => $data['email'],
+        'pluginVersion'     => $data['plugin_version'],
+        'phpVersion'        => $data['php_version'],
+        'wpVersion'         => $data['wp_version'],
+        'allPlugins'        => $data['all_plugins'],
+        'detailsEventType'  => 'activating',
+        'newsletterConsent' => !empty($_POST['email_subscription']),
+        'accountKey'        => empty($_POST['publisher_token']) ? null : $_POST['publisher_token'],
+        'installKey'        => $install_key ?: null
+      ]
+    ]);
   }
 
   function trinity_is_text_empty($text) {
@@ -571,20 +571,63 @@
 
   function trinity_get_package_data() {
     $error_msg = trinity_get_notice_error_message("Can't get plan data.");
-    $result    = trinity_curl_get(TRINITY_AUDIO_CREDITS_URL . '?installkey=' . trinity_get_install_key(), $error_msg, false);
+    $result    = trinity_api_request([
+      'method' => 'GET',
+      'path'   => trinity_unit_path('/credits')
+    ]);
 
-    if (!$result) die(esc_html($error_msg));
+    if (!trinity_api_is_ok($result)) die(esc_html($error_msg));
 
-    return json_decode($result);
+    return trinity_credits_to_package_data($result['body']);
+  }
+
+  /*
+   * The credits answer in the shape the templates read (Sergio's): the balance at the top with `used` for
+   * credits-service's `usedCredits`, the cap type, and the package as its old row. No balance reads as Sergio's fallback.
+   */
+  function trinity_credits_to_package_data($credits) {
+    $balance = $credits['balance'];
+    $package = $credits['package'];
+
+    if ($balance === null) {
+      $balance = [
+        'packageLimit' => 'N/A',
+        'left'         => 0,
+        'used'         => 0
+      ];
+    } elseif (isset($balance['usedCredits'])) {
+      $balance = [
+        'packageLimit'  => $balance['packageLimit'],
+        'used'          => $balance['usedCredits'],
+        'left'          => $balance['left'],
+        'nextRefreshAt' => $balance['nextRefreshAt']
+      ];
+    }
+
+    return json_decode(wp_json_encode(array_merge($balance, [
+      'capType' => $package['capType'],
+      'package' => [
+        'package_name'        => $package['name'],
+        'displayName'         => $package['displayName'],
+        'package_description' => $package['description'],
+        'account_key'         => $package['accountKey']
+      ]
+    ])));
   }
 
   function trinity_get_unit_config_from_trinity() {
     $error_msg = trinity_get_notice_error_message("Can't get plugin configuration.");
-    $result    = trinity_curl_get(TRINITY_AUDIO_UPDATE_PLUGIN_CONFIG_URL . '?installkey=' . trinity_get_install_key(), $error_msg, false);
+    $result    = trinity_api_request([
+      'method' => 'GET',
+      'path'   => trinity_unit_path()
+    ]);
 
-    if (!$result) die(esc_html($error_msg));
+    if (!trinity_api_is_ok($result)) die(esc_html($error_msg));
 
-    return json_decode($result);
+    // only `powered_by` is read, as 1 or 0 (Sergio's answer)
+    return (object)[
+      'powered_by' => $result['body']['showPoweredBy'] ? 1 : 0
+    ];
   }
 
   /**
@@ -596,7 +639,11 @@
     $locales = get_transient(TRINITY_AUDIO_LOCALES_CACHE);
     if ($locales) return $locales;
 
-    $locales = json_decode(trinity_curl_get(TRINITY_AUDIO_LOCALES_URL, '', false), true);
+    $result  = trinity_api_request([
+      'method' => 'GET',
+      'path'   => TRINITY_AUDIO_LOCALES_PATH
+    ]);
+    $locales = trinity_api_is_ok($result) ? $result['body'] : null;
     if (empty($locales)) return [];
 
     set_transient(TRINITY_AUDIO_LOCALES_CACHE, $locales, TRINITY_AUDIO_LOCALES_CACHE_TTL);
@@ -605,13 +652,15 @@
   }
 
   function notifications($package_data) {
-    $response = trinity_curl_get(TRINITY_AUDIO_NOTIFICATIONS_URL . '/?type=general', '', false);
+    $result  = trinity_api_request([
+      'method' => 'GET',
+      'path'   => TRINITY_AUDIO_NOTIFICATION_PATH . '?type=general'
+    ]);
+    $message = trinity_api_is_ok($result) ? $result['body']['message'] : null;
 
-    if ($response) {
-      $notification = json_decode($response);
-      if (property_exists($notification, 'message')) {
-        $notification = json_decode($notification->message);
-      }
+    // a JSON string, put in by hand
+    if ($message) {
+      $notification = json_decode($message);
 
       if ($notification && property_exists($notification, 'message_html')) {
         echo wp_kses_post($notification->message_html);

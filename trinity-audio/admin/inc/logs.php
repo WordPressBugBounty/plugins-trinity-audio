@@ -1,3 +1,4 @@
+<?php if (!defined('ABSPATH')) exit; ?>
 <div class="wrap" id="trinity-admin-logs">
   <div class="header-wrapper">
     <div class="h1">Logs</div>

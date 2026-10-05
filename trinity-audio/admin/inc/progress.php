@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   function trinity_is_any_post_enabled(): bool {
     $query_args = array(
       'post_type'   => 'post',

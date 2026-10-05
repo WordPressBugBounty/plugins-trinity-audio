@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   // we have to allow people to uninstall plugin no matter what happened.
   try {
     require_once __DIR__ . '/inc/constants.php';
@@ -33,7 +34,7 @@
     delete_option(TRINITY_AUDIO_FIRST_CHANGES_SAVE);
     delete_option(TRINITY_AUDIO_MIGRATION_PROGRESS);
 
-    trinity_update_details(TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL, 'deleted', false);
+    trinity_update_details('deleted');
   } catch (Exception $e) {
     error_log($e->getMessage());
   }

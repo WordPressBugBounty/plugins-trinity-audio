@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   add_filter('cron_schedules', function($schedules) {
     $schedules['two_minutes'] = array(
       'interval' => 120,

@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/../../utils.php';
   require_once __DIR__ . '/../../inc/common.php';
   require_once __DIR__ . '/../../inc/constants.php';

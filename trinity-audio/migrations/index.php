@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/index.php';
   require_once __DIR__ . '/../utils.php';
 
@@ -77,7 +78,7 @@
       ]
     );
 
-    trinity_update_details(TRINITY_AUDIO_UPDATE_PLUGIN_DETAILS_URL, 'upgrade', false);
+    trinity_update_details('upgrade');
 
     trinity_remove_transient_migration_in_progress();
     trinity_log("Latest plugin version is written into DB as: $plugin_version");

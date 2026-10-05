@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/../../inc/templates.php';
   require_once __DIR__ . '/../../inc/common.php';
 ?>
@@ -96,7 +97,7 @@
                         DNS resolving hostname #2
                       </td>
                       <td colspan="2">
-                        <?= esc_html(gethostbyname(TRINITY_AUDIO_SERVICE_HOST)); ?>
+                        <?= esc_html(gethostbyname(TRINITY_AUDIO_INTEGRATION_API_HOST)); ?>
                       </td>
                     </tr>
                     <tr>

@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   function trinity_log($message, $detailed_message = '', $debug_info = '', $log_type = TRINITY_AUDIO_ERROR_TYPES::info) {
     if ($log_type === TRINITY_AUDIO_ERROR_TYPES::error || $log_type === TRINITY_AUDIO_ERROR_TYPES::warn) {
       error_log($detailed_message);

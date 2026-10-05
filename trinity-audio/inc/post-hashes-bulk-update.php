@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/post-hashes.php';
 
   const TRINITY_AUDIO_PHBU_BATCH_RETRY       = 'trinity_audio_phbu_batch_retry';
@@ -154,19 +155,14 @@
   function trinity_phbu_send_bulk_update_result() {
     $failed_posts = trinity_phbu_get_failed_posts();
 
-    $post_data = [
-      'installkey'        => trinity_get_install_key(),
-      'num_posts'         => trinity_phbu_get_total_posts_num(),
-      'num_posts_success' => trinity_phbu_get_updated_posts_num(),
-    ];
-
-    trinity_curl_post(
-      [
-        'post_data'     => $post_data,
-        'url'           => TRINITY_AUDIO_BULK_UPDATE_URL,
-        'error_message' => trinity_can_not_connect_error_message('ERROR_UPDATE_ST1'),
+    trinity_api_request([
+      'method' => 'POST',
+      'path'   => trinity_unit_path('/bulk-update'),
+      'body'   => [
+        'totalPosts'   => trinity_phbu_get_total_posts_num(),
+        'updatedPosts' => trinity_phbu_get_updated_posts_num()
       ]
-    );
+    ]);
 
     if (sizeof($failed_posts) > 0) {
       trinity_log('Failed to update the following posts:', implode(',', $failed_posts), '', TRINITY_AUDIO_ERROR_TYPES::warn);

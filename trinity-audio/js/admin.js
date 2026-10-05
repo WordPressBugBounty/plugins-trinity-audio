@@ -404,7 +404,7 @@ function trinityAudioOnPublisherTokenSubmit(e) {
     url: ajaxurl,
     dataType: 'json',
     data: {
-      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN_URL,
+      action: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_ASSIGN_ACCOUNT_KEY,
       publisher_token: jQuery('#' + window.TRINITY_WP_ADMIN.TRINITY_AUDIO_PUBLISHER_TOKEN).val().trim(),
       [window.TRINITY_WP_ADMIN.TRINITY_AUDIO_AJAX_NONCE_NAME]: window.TRINITY_WP_ADMIN.TRINITY_AUDIO_NONCES.assign_account_key
     },

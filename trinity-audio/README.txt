@@ -173,6 +173,13 @@ Check your credit balance in the plugin dashboard. Players won't appear on new p
 
 == Changelog ==
 
+= 5.28.0 =
+ *Release Date - Oct 5, 2026*
+ * Updated the service endpoints the plugin connects to
+ * Fixed the Account key field missing on the Info page
+ * Upgrade offers are shown on the Free plan only
+ * Security improvements
+
 = 5.27.1 =
  *Release Date - Sep 11, 2026*
  * Fixed "Enable/Disable on all posts" failing with a fatal error on sites with tens of thousands of posts

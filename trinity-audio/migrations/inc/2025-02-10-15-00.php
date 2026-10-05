@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   if (!trinity_should_migrate_for('5.20.0')) return;
 
   // drop cache since we don't need it anymore

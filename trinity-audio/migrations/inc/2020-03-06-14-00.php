@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   // Use hardcoded values only, don't rely on consts, as they can change in time
 
   if (!trinity_should_migrate_for('1.2.5')) return;

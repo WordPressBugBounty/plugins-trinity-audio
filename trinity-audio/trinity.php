@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   /**
    * @link              trinityaudio.ai
    * @since             1.0.0
@@ -8,7 +9,7 @@
    * Plugin Name:       Trinity Audio
    * Plugin URI:        https://www.trinityaudio.ai/the-trinity-audio-wordpress-plugin-implementation-guide
    * Description:       This plugin generates an audio version of the post, for absolutely FREE. You can choose the language and the gender of the voice reading your content. You also have the option to add Trinity Audio's player on select posts or have it audiofy all of your content. In both cases, it only takes a few simple clicks to get it done. The plugin is built through collaboration with the Amazon Polly team.
-   * Version:           5.27.1
+   * Version:           5.28.0
    * Author:            Trinity Audio
    * Author URI:        https://trinityaudio.ai/
    * License:           GPL-3.0 ONLY

@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   require_once __DIR__ . '/constants.php';
   require_once __DIR__ . '/common.php';
 
@@ -80,7 +81,7 @@
 
     if (!empty($next_refresh_at_formatted)) $result['html'] .= "<div class='next-refresh-at'><span class='renew-at-label'>Renew at </span><span class='renew'>" . esc_html($next_refresh_at_formatted) . "</span></div>";
 
-    if ($cap_type !== 'no_limit' && $package_name !== 'Premium') {
+    if ($cap_type !== 'no_limit' && $package_name === 'Free') {
       $result['html'] .= "<div>Need more articles? <a href='" . esc_url(trinity_add_utm_to_url(trinity_get_upgrade_url(), 'wp_admin', 'subscription_panel')) . "' target='_blank'>Try a different plan</a></div>";
     }
 

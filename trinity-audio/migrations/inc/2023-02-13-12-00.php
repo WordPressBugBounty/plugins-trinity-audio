@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   if (!trinity_get_install_key()) return;
   if (!trinity_should_migrate_for('5.3.12')) return;
 

@@ -1,4 +1,5 @@
 <?php
+  if (!defined('ABSPATH')) exit;
   if (!class_exists('simple_html_dom')) {
     require_once __DIR__ . '/lib/simple_html_dom.php';
   }
