@@ -35,6 +35,9 @@
    * @return void
    */
   function trinity_phbu_start($is_continue = false) {
+    // not registered yet: without an install key every batch would fail, yet the loop would report success
+    if (!trinity_get_install_key()) return;
+
     // if there's already a running process, exit
     if (trinity_phbu_is_bulk_update_alive()) return;
 

@@ -173,6 +173,10 @@ Check your credit balance in the plugin dashboard. Players won't appear on new p
 
 == Changelog ==
 
+= 5.28.1 =
+ *Release Date - Oct 14, 2026*
+ * Fixed post updates being sent to Trinity Audio before the plugin is registered
+
 = 5.28.0 =
  *Release Date - Oct 5, 2026*
  * Updated the service endpoints the plugin connects to

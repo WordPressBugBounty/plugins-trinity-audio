@@ -44,6 +44,9 @@
    * @return number
    */
   function trinity_ph_update($post_ids, $total_posts = 1, $updated_posts = 0, $batch_retry = 0, $is_bulk = false): int {
+    // not registered yet: without an install key there is no unit to request hashes for
+    if (!trinity_get_install_key()) return 0;
+
     $posts_amount = count($post_ids);
     trinity_log("Post hashes updating for $posts_amount post(s) ⚙️");
 
