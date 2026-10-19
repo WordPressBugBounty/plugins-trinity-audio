@@ -173,6 +173,10 @@ Check your credit balance in the plugin dashboard. Players won't appear on new p
 
 == Changelog ==
 
+= 5.28.2 =
+ *Release Date - Oct 15, 2026*
+ * Saves the exact voice selected in the settings, also for Voice v2 publishers
+
 = 5.28.1 =
  *Release Date - Oct 14, 2026*
  * Fixed post updates being sent to Trinity Audio before the plugin is registered

@@ -267,7 +267,7 @@ async function trinityAudioOnSettingsFormSubmit(form, isInitialSave) {
     localStorage.setItem(TRINITY_LOCAL_STORAGE_IS_INITIAL_SAVE, isInitialSave);
 
     const {
-      voice,
+      voiceId,
       voiceStyle,
       theme,
       language,
@@ -290,7 +290,7 @@ async function trinityAudioOnSettingsFormSubmit(form, isInitialSave) {
         language,
         voiceStyle,
         themeId: theme,
-        voice,
+        voiceId,
         poweredBy: Number(form.elements.trinity_audio_poweredby.checked),
         fab,
         showSettings: Number(showSettings),

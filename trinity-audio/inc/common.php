@@ -393,7 +393,7 @@
       'path'   => trinity_unit_path(),
       'body'   => [
         'language'       => $_GET['language'] ?? null,
-        'voice'          => $_GET['voice'] ?? null,
+        'voiceId'        => $_GET['voiceId'] ?? null,
         'voiceStyle'     => $_GET['voiceStyle'] ?? null,
         'fab'            => $_GET['fab'] ?? null,
         'playbackRate'   => trinity_api_number($_GET['speed'] ?? null),
